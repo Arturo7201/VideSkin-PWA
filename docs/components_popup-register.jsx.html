@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/popup-register.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/popup-register.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+
+import ValidationPage from '../components/validation-code';
+
+import axios from 'axios';
+import { userConfig } from '../js/config';
+
+
+import Swal from 'sweetalert2';
+
+
+import { 
+  Page,
+  Navbar,
+  List,
+  ListInput,
+  Block,
+  BlockTitle,
+  Button,
+  Icon,
+  Popup,
+  Link
+} from 'framework7-react';
+
+/**
+* @module PopUpRegistrarse
+*/
+
+/**
+* PopUp Registrarse
+*
+* Este componente representa el PopUp para ampliar los resultados de una lesión.
+* @component
+* @param {boolean} props.showPopup - Indica si el PopUp está visible.
+* @param {function} props.closePopup - Función para cerrar el PopUp.
+* @returns {JSX.Element} 
+*/
+
+
+const RegisterPage = ({ showPopup, closePopup}) => {
+  /**
+  * Formulario de registro.
+  * @const {Object} formData 
+  */
+  const [formData, setFormData] = useState({
+    name: '',
+    surname: '',
+    username: '',
+    email: '',
+    password: '',
+    password2: '',
+  });
+  /**
+  * Control de formulario de registro completo.
+  * @const {boolean} isFormComplete 
+  */
+  const [isFormComplete, setIsFormComplete] = useState(false);
+  /**
+  * Control de password valida.
+  * @const {boolean} isValidPassword 
+  */
+  const [isValidPassword, setIsValidPassword] = useState(true);
+  /**
+  * Control de renderizado de popup de validacion.
+  * @const {boolean} showPopupVal 
+  */
+  const [showPopupVal, setShowPopupVal] = useState(false);
+  const closePopupVal = () => {
+    // Cerrar el popup
+    setShowPopupVal(false);
+  };
+
+  /**
+  * Efecto que las contraseñas son iguales y los campos estan completos.
+  *
+  * @method
+  * @memberof module:PopUpRegistrarse
+  * @param {Object} formData
+  * @name useEffect
+  */
+  useEffect(() => {
+    const isComplete = Object.values(formData).every(value => value !== '');
+    if(formData.password === formData.password2){
+      setIsFormComplete(isComplete);
+    }
+  }, [formData]);
+
+  
+  /**
+  * Manejadora que establece contraseña valida cuando estas son iguales.
+  *
+  * @method
+  * @memberof module:PopUpRegistrarse
+  * @name handlePasswordConfirmation
+  */
+  const handlePasswordConfirmation = (e) => {
+    const inputValue = e.target.value;
+
+    if (formData.password === inputValue) {
+      setIsValidPassword(true);
+      setFormData({ ...formData, password2: inputValue });
+
+    } else {
+      setIsValidPassword(false)
+      setIsFormComplete(false)
+    }
+
+  };
+
+  /**
+  * Pide registrar usuario a la API.
+  *
+  * @async
+  * @method
+  * @param {Object} formData
+  * @returns {boolean} 
+  * @throws {Error} - Si ocurre un error durante la solicitud.
+  * @memberof module:PopUpRegistrarse
+  * @name handleSubmit
+  */ 
+  const handleSubmit = () => {
+    
+    console.log('Formulario enviado:', formData);
+  
+    axios.post(`http://${userConfig.serverIP}:${userConfig.serverPort}/add`, { form: formData })
+
+    .then((response) => {
+
+      setShowPopupVal(true)
+
+    })
+    .catch((error) => {
+      try{
+
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: error.response.data.error
+        })
+        
+      }catch{
+
+        console.error(error.message)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: error.message
+        })
+
+      }
+    });
+};
+
+  return (
+    &lt;Popup className="popup-tablet-fullscreen" opened={showPopup} onClose={closePopup}>
+      &lt;Page name="reg" style={showPopupVal ? { filter: 'blur(5px)' } : {}}>
+        &lt;Navbar> 
+          &lt;Link onClick={closePopup} back iconIos="f7:arrow_left" iconMd="material:arrow_back">&lt;/Link>
+          &lt;span style={{ fontSize: '1.5rem' }}>Registro&lt;/span>  
+        &lt;/Navbar> 
+        
+        &lt;Block>
+          
+          &lt;BlockTitle style={{marginLeft: '1.2rem', fontWeight: 'bold', color: '#336699'}}>Por favor, complete el formulario de registro:&lt;/BlockTitle>  
+        
+
+          &lt;List strongIos dividersIos insetIos form >
+
+            &lt;ListInput
+              id="nombre"
+              label="Nombre"
+              type="text"
+              placeholder="Enter name"
+              info=""
+              pattern="^[A-Za-záéíóúÁÉÍÓÚñÑ\- ']+$"
+              errorMessage="¡Solo se permiten letras, espacios, apóstrofes y guiones!"
+              required
+              validate
+              value={formData.name}
+              clearButton
+              onInput={(e) => setFormData({ ...formData, name: e.target.value })}
+              >
+              &lt;Icon ios="f7:person" md="material:person" slot='media'/>
+            &lt;/ListInput>
+  
+            &lt;ListInput
+              id="apellido"
+              label="Apellido"
+              type="text"
+              placeholder="Enter surname"
+              info=""
+              pattern="^[A-Za-záéíóúÁÉÍÓÚñÑ\- ']+$"
+              errorMessage="¡Solo se permiten letras, espacios, apóstrofes y guiones!"
+              required
+              validate
+              value={formData.surname}
+              clearButton
+              onInput={(e) => setFormData({ ...formData, surname: e.target.value })}
+              >
+              &lt;Icon ios="f7:person" md="material:person" slot='media'/>
+            &lt;/ListInput>
+ 
+            &lt;ListInput
+              id="username"
+              label="Nombre de usuario"
+              type="text"
+              placeholder="Nombre de usuario"
+              info=""
+              pattern="^[A-Za-záéíóúÁÉÍÓÚñÑ0-9_.]+$"
+              errorMessage="¡Solo se permiten letras, números, puntos y guiones bajos!"
+              required
+              validate
+              value={formData.username}
+              clearButton
+              onInput={(e) => setFormData({ ...formData, username: e.target.value })}
+              >
+              &lt;Icon material="badge" slot='media'/>
+            &lt;/ListInput>
+  
+            &lt;ListInput
+              id="apellido"
+              label="Correo electrónico"
+              type="email"
+              placeholder="Correo electrónico"
+              info=""
+              required
+              validate
+              value={formData.email}
+              clearButton
+              onInput={(e) => setFormData({ ...formData, email: e.target.value })}
+              >
+              &lt;Icon material="alternate_email" slot='media'/>
+            &lt;/ListInput>
+
+            &lt;ListInput
+              id="contraseña"
+              label="Contraseña"
+              type="password"
+              placeholder="Contraseña"
+              info=""
+              pattern="^(?=\w*\d)(?=\w*[A-Z])(?=\w*[a-z])\S{8,16}$"
+              errorMessage="¡Entre 8 y 16 caracteres, dígitos, minúsculas y mayúsculas!"
+              required
+              validate
+              value={formData.password}
+              clearButton
+              onInput={(e) => setFormData({ ...formData, password: e.target.value })}
+              >
+              &lt;Icon material="password" slot='media'/>
+            &lt;/ListInput>
+
+            &lt;ListInput
+              id="confirmeContraseña"
+              label="Confirme Contraseña"
+              type="password"
+              placeholder="Repeat password"
+              info=""
+              errorMessage="¡Las contraseñas son distitas!"
+              errorMessageForce={!isValidPassword}
+              clearButton
+              onInput={handlePasswordConfirmation}
+              >
+              &lt;Icon material="password" slot='media'/>
+            &lt;/ListInput>
+            
+
+            &lt;Block>
+              &lt;Button fill disabled={!isFormComplete} onClick={handleSubmit}>Registrarse&lt;/Button>
+            &lt;/Block>
+
+
+            &lt;/List>
+
+        &lt;/Block>
+      &lt;/Page>
+      &lt;ValidationPage showPopup={showPopupVal} closePopup={closePopupVal} id="val-popup" user={formData.username} closeRegisterPopup={closePopup  }/>
+    &lt;/Popup>
+  );
+};
+
+export default RegisterPage;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Calendario.html">Calendario</a></li><li><a href="module-ChangePasswd.html">ChangePasswd</a></li><li><a href="module-CodeValidationPopup.html">CodeValidationPopup</a></li><li><a href="module-Contacto.html">Contacto</a></li><li><a href="module-Cribado.html">Cribado</a></li><li><a href="module-Estadisticas.html">Estadisticas</a></li><li><a href="module-FilePicker.html">FilePicker</a></li><li><a href="module-Galeria.html">Galeria</a></li><li><a href="module-HomePage.html">HomePage</a></li><li><a href="module-Landing.html">Landing</a></li><li><a href="module-Login.html">Login</a></li><li><a href="module-MainApp.html">MainApp</a></li><li><a href="module-PerfilPage.html">PerfilPage</a></li><li><a href="module-PopUpAmpliar.html">PopUpAmpliar</a></li><li><a href="module-PopUpAmpliarGaleria.html">PopUpAmpliarGaleria</a></li><li><a href="module-PopUpBody.html">PopUpBody</a></li><li><a href="module-PopUpCropper.html">PopUpCropper</a></li><li><a href="module-PopUpRegistrarse.html">PopUpRegistrarse</a></li><li><a href="module-PopUpResultados.html">PopUpResultados</a></li><li><a href="module-URLPicker.html">URLPicker</a></li></ul><h3>Global</h3><ul><li><a href="global.html#BuscadorPacientesPopUp">BuscadorPacientesPopUp</a></li><li><a href="global.html#InstruccionesPopup">InstruccionesPopup</a></li><li><a href="global.html#MyApp">MyApp</a></li><li><a href="global.html#NotFoundPage">NotFoundPage</a></li><li><a href="global.html#Tipos">Tipos</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Aug 07 2024 11:22:41 GMT+0200 (hora de verano de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

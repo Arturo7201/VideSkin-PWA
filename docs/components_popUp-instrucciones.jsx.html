@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/popUp-instrucciones.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/popUp-instrucciones.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+
+import FilePicker from '../components/file-piker';
+
+import { 
+  Popup,
+  Page,
+  Block,
+  Progressbar,
+} from 'framework7-react';
+
+import styled from "styled-components";
+import { MdImageSearch} from "react-icons/md";
+import { TbRulerMeasure } from "react-icons/tb";
+import { MdArrowBack } from 'react-icons/md';
+import { PiCubeFocusDuotone } from "react-icons/pi";
+import { AiOutlineAim } from "react-icons/ai";
+
+
+
+
+/**
+* Instrucciones
+* Este componente representa el PopUp con las instrucciones y sus componentes para el analisis de una imagen.
+* @component
+* @param {boolean} props.showPopup - Indica si el PopUp está visible.
+* @param {function} props.closePopup - Función para cerrar el PopUp.
+* @param {String} props.imagen - Variable que indica la imagen actual.
+* @param {function} props.setImagen - Función para setear la imagen actual.
+* @param {boolean} props.fileSelected - Variable que indica si se ha elegido una imagen.
+* @param {function} props.setFileSelected - Función para setear el control sobre la eleccion de la imagen.
+* @param {function} props.handleAnalizar - Función para realizar el analisis de la imagen.
+* @returns {JSX.Element} 
+*/
+
+const InstruccionesPopup = ({ showPopup, closePopup, imagen, setImagen, fileSelected, setFileSelected, handleAnalizar}) => {
+
+
+  const handleGoBack = () => {
+    closePopup()
+  }
+  
+
+  return (
+    &lt;Popup opened={showPopup} onClose={closePopup} closeByBackdropClick={false} style={{border: '1px solid teal'}} >
+      &lt;Page>
+
+        &lt;div className="navbar" style={{display: 'grid', gridTemplateColumns: '5% 1fr', background: 'teal', color: '#ffffff', textAlign: 'center', alignItems: 'center',  fontSize: '170%', lineHeight: '250%'}}>
+          &lt;MdArrowBack style={{ fontSize: '24px', marginLeft: '90%', cursor: 'pointer'}} onClick={handleGoBack} />
+          &lt;span style={{ marginLeft: '10%', marginRight: '15%', textAlign: 'center'}}>Añadir la Imagen&lt;/span>
+        &lt;/div>
+
+        &lt;Container>
+
+          &lt;Block>
+            &lt;div className="Linkicon" style={{display: 'grid', gridTemplateColumns: '10% 90%', alignItems: 'center', margin:'5% 0'}}>
+              &lt;MdImageSearch  style={{width: '100%', fontSize: '30px'}}/>
+              &lt;div style={{width: '100%', fontWeight: 'bold', fontSize: '150%'}}>
+                ¿Cómo elegir la imagen para el análisis?
+              &lt;/div>
+            &lt;/div>
+
+            &lt;div className="Linkicon" style={{display: 'grid', gridTemplateColumns: '10% 90%', alignItems: 'center', margin:'5% 0'}}>
+              &lt;PiCubeFocusDuotone style={{width: '100%', fontSize: '30px', color:'#006689'}}/>
+              &lt;div style={{width: '100%', fontSize: '120%'}}>
+                Asegúrate de que el área de la fotografía esté bien iluminada y enfocada.
+              &lt;/div>
+            &lt;/div>
+
+            &lt;div className="Linkicon" style={{display: 'grid', gridTemplateColumns: '10% 90%', alignItems: 'center', margin:'5% 0'}}>
+              &lt;AiOutlineAim  style={{width: '100%', fontSize: '30px', color:'#006689'}}/>
+              &lt;div style={{width: '100%', fontSize: '120%'}}>
+                Coloca la cámara del dispositivo sobre area de la piel donde esta la lesión y en dirección a esta.
+              &lt;/div>
+            &lt;/div>
+
+            &lt;div className="Linkicon" style={{display: 'grid', gridTemplateColumns: '10% 90%', alignItems: 'center', margin:'5% 0'}}>
+              &lt;TbRulerMeasure style={{width: '100%', fontSize: '30px', color:'#006689'}}/>
+              &lt;div style={{width: '100%', fontSize: '120%'}}>
+                Mantén el dispositivo a una distancia de unos 10cm y asegurate de centrar la lesión en el medio de la imagen.
+              &lt;/div>
+            &lt;/div>
+
+          &lt;/Block>
+
+          &lt;Progressbar progress={100} color="teal" id="demo-inline-progressbar" />
+
+          &lt;br/>
+
+          &lt;FilePicker imagen={imagen} setImagen={setImagen} fileSelected={fileSelected} setFileSelected={setFileSelected} handleAnalizar={handleAnalizar} />
+
+        &lt;/Container>
+      &lt;/Page>
+    &lt;/Popup>
+  );
+};
+
+export default InstruccionesPopup;
+
+
+const Container = styled.div`
+  height: auto;
+  width: 90%;
+  
+  max-width: 700px; /* Ancho máximo de 500px */
+  margin: 1% auto;
+
+`
+const TextIcon = styled.div`
+  display: felx;
+  align-items: center;              /* Centrar verticalmente los elementos */
+
+  width: 90%;
+  margin: 1% auto;
+`
+
+const ImageContainer = styled.div`
+  height: auto;
+  width: 70%;
+
+
+  max-width: 350px; /* Ancho máximo de 500px */
+  margin: 1% auto;
+
+  overflow: hidden;
+
+  position: relative;
+
+  
+  border: 1px solid blue;
+`
+
+const Imagen = styled.img`
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+`
+const Marker = styled.div`
+  position: absolute;
+
+  top: ${({ y }) => `${y}%`};
+  left: ${({ x }) => `${x}%`};  
+  
+  width: 15px; 
+  height: 15px; 
+  background-color: red; 
+  border-radius: 50%; 
+`
+const ContainerButton = styled.div`
+  height: auto;
+  width: 100%;
+  max-width: 700px; /* Ancho máximo de 500px */
+
+  margin: 10px auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2%;
+
+  border: 1px solid red;
+`
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Calendario.html">Calendario</a></li><li><a href="module-ChangePasswd.html">ChangePasswd</a></li><li><a href="module-CodeValidationPopup.html">CodeValidationPopup</a></li><li><a href="module-Contacto.html">Contacto</a></li><li><a href="module-Cribado.html">Cribado</a></li><li><a href="module-Estadisticas.html">Estadisticas</a></li><li><a href="module-FilePicker.html">FilePicker</a></li><li><a href="module-Galeria.html">Galeria</a></li><li><a href="module-HomePage.html">HomePage</a></li><li><a href="module-Landing.html">Landing</a></li><li><a href="module-Login.html">Login</a></li><li><a href="module-MainApp.html">MainApp</a></li><li><a href="module-PerfilPage.html">PerfilPage</a></li><li><a href="module-PopUpAmpliar.html">PopUpAmpliar</a></li><li><a href="module-PopUpAmpliarGaleria.html">PopUpAmpliarGaleria</a></li><li><a href="module-PopUpBody.html">PopUpBody</a></li><li><a href="module-PopUpCropper.html">PopUpCropper</a></li><li><a href="module-PopUpRegistrarse.html">PopUpRegistrarse</a></li><li><a href="module-PopUpResultados.html">PopUpResultados</a></li><li><a href="module-URLPicker.html">URLPicker</a></li></ul><h3>Global</h3><ul><li><a href="global.html#BuscadorPacientesPopUp">BuscadorPacientesPopUp</a></li><li><a href="global.html#InstruccionesPopup">InstruccionesPopup</a></li><li><a href="global.html#MyApp">MyApp</a></li><li><a href="global.html#NotFoundPage">NotFoundPage</a></li><li><a href="global.html#Tipos">Tipos</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Aug 07 2024 11:22:41 GMT+0200 (hora de verano de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

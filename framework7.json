@@ -1,0 +1,19 @@
+{
+  "cwd": "C:\\Users\\artur\\Desktop\\FW7",
+  "type": [
+    "pwa",
+    "web"
+  ],
+  "name": "Web_",
+  "framework": "react",
+  "template": "tabs",
+  "cssPreProcessor": false,
+  "bundler": "vite",
+  "theming": {
+    "customColor": true,
+    "color": "#0099CC",
+    "darkMode": false,
+    "iconFonts": true
+  },
+  "customBuild": false
+}

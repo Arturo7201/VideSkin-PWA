@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: app.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: app.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect, useRef } from 'react';
+
+
+import { Light, Dark } from "../styles/Themes";
+import { ThemeProvider } from "styled-components";
+export const ThemeContext = React.createContext(null);
+
+
+import axios from 'axios';
+
+
+import {
+  f7,
+  f7ready,
+  App,
+  View
+} from 'framework7-react';
+
+
+import routes from '../js/routes';
+import store from '../js/store';
+import { userConfig } from '../js/config';
+
+// Framework7 Parameters
+const f7params = {
+  name: 'VideSkin', // App name
+    theme: 'auto', // Automatic theme detection
+    colors: {
+      primary: '#0099CC',
+    },
+ 
+    // App store
+    store: store,
+    // App routes
+    routes: routes,
+ 
+    // Register service worker (only on production build)
+    serviceWorker: process.env.NODE_ENV ==='production' ? {
+      path: '/service-worker.js',
+    } : {},
+};
+
+/**
+* Componente principal de la aplicación web.
+*
+* @component App
+* // Ejemplo de uso del componente App
+* const f7params = { theme: 'ios', name: 'My App' };
+* return &lt;App props={f7params} />
+* 
+* @param {object} f7params - Las propiedades pasadas al componente.
+*/
+
+const MyApp = () => {
+
+
+  
+  f7ready(() => {
+
+  });
+
+  /**
+   * Estado que indica si la pantalla es lo suficientemente estrecha como para considerarla móvil.
+   *
+   * @type {boolean}
+   */
+  const [isMobile, setIsMobile] = useState(false);
+
+  /**
+  * Efecto que verifica si la pantalla es lo suficientemente estrecha
+  * y ajusta el estado `isMobile` en consecuencia. También agrega un listener 
+  * para el evento `resize` que vuelve a verificar el tamaño de la pantalla
+  * cada vez que la ventana se redimensiona.
+  *
+  * @function
+  */
+  useEffect(() => { 
+
+    const checkIfMobile = () => {
+        setIsMobile(window.innerWidth &lt;= 700); 
+    };
+
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+  
+    return () => {
+        window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
+
+
+  /**
+  * Comprueba si el usuario está autenticado mediante la validación del token almacenado en localStorage o sessionStorage.
+  *
+  * @async
+  * @function
+  * @returns {Promise&lt;boolean>} - Retorna una promesa que resuelve a `true` si el usuario está autenticado, de lo contrario `false`.
+  * @throws {Error} - Si ocurre un error durante la solicitud de autenticación.
+  */
+  async function isAuthenticated() {
+    
+    const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    };
+
+
+    try {
+      //console.log(userConfig.serverIP,userConfig.serverPort)
+      const response = await axios.get(`http://${userConfig.serverIP}:${userConfig.serverPort}/jwt`, config);
+      //console.log(response.data.logged_in_as);
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+
+  /**
+  * Efecto que comprueba la autenticación del usuario al montar el componente.
+  * Navega a diferentes rutas basándose en el estado de autenticación y el tamaño de la ventana.
+  *
+  * @function
+  */
+  useEffect(() => {
+    async function checkAuthentication() {
+      try {
+        const authenticated = await isAuthenticated();
+       
+        if (authenticated) {
+          
+          if (window.innerWidth &lt;= 768){
+            
+            f7.views.main.router.navigate('/navigation/');
+
+          }else{
+            
+            f7.views.main.router.navigate('/mainApp/');
+
+          }
+        }else{
+          
+          f7.views.main.router.navigate('/');
+        }
+      } catch (error) {
+        console.error('Error al verificar la autenticación:', error);
+        // Manejar el error aquí si es necesario
+      }
+    }
+
+    checkAuthentication();
+  }, []);
+
+
+
+
+  const [theme, setTheme] = useState("light");
+  const themeStyle = theme === "light" ? Light : Dark;
+
+
+
+  //&lt;Navigation/>
+  return (
+    
+    &lt;App { ...f7params }>
+      &lt;ThemeContext.Provider value={{ setTheme, theme }}>
+        &lt;ThemeProvider theme={themeStyle}>
+            &lt;View main url="/">
+
+
+
+    
+
+            &lt;/View>
+        &lt;/ThemeProvider>
+      &lt;/ThemeContext.Provider>
+    &lt;/App>
+    
+  )
+}
+
+
+export default MyApp;
+export {f7, f7params};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#MyApp">MyApp</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Sun Jun 23 2024 13:50:24 GMT+0200 (hora de verano de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

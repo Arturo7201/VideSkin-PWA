@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/url-piker.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/url-piker.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+
+import PopUpCropper from '../components/popup-recortar.jsx';
+import Swal from 'sweetalert2';
+
+import { MdInsertPhoto } from "react-icons/md";
+
+
+
+import axios from 'axios';
+import { userConfig } from '../js/config';
+
+
+import { 
+  Input,
+  Block,
+  Button,
+  Icon,
+  f7
+ } from 'framework7-react'; 
+
+
+
+/**
+* @module URLPicker
+*/
+/**
+* URLPicker Component
+*
+* @param {String} imagen -Imagen que va a ser elegida del dispositivo.
+* @param {function} setImagen -Funcion para setear la imagen.
+* @param {String} fileSelected -Variable de control de eleccion de archivo.
+* @param {function} setFileSelected -Funcion para setear la variable de control de eleccion de archivo.
+* @param {function} handleAnalizar -Funcion para activar y proceder con el analisis.
+*
+* Este componente renderiza y da funcionalidad a la parte encargada de elegir a traves de URL, recortar y mandar a analizar las imagenes.
+*
+* @returns {JSX.Element} 
+*/
+
+const URLPicker = ({imagen, setImagen, fileSelected, setFileSelected, handleAnalizar}) => {
+  
+  /**
+  * Formulario con la URL.
+  * @const {String} urlValue 
+  */
+  const [urlValue, setUrlValue] = useState(''); 
+  /**
+  * Control de la validez de la URL.
+  * @const {String} inputValid 
+  */
+  const [inputValid, setInputValid] = useState(false);
+
+  /**
+  * Función de devolución de llamada que se ejecutará cuando se valide la entrada.
+  *
+  * @method
+  * @memberof module:URLPicker
+  * @name handleCerrarUrl
+  */ 
+  const handleValidate = (isValid) => {
+    setInputValid(isValid);
+  };
+
+  const alertValid = () => {
+    f7.dialog.alert('Por favor, introduce una URL.');
+  };
+  
+  //#region PROCESAR URL ------------------------------------------------------------------------
+  /**
+  * Manejadora para selecionar la URL del formulario.
+  *
+  * @method
+  * @memberof module:URLPicker
+  * @name handleSeleccionar
+  */
+  const handleSeleccionar = () => {
+
+    if (urlValue) {
+
+      if (typeof urlValue === 'string' &amp;&amp; urlValue.startsWith('data:image/')) {
+        setImagen(urlValue);
+        setFileSelected(true);
+        return
+      }else{
+        handleProcesarClick()
+      }  
+
+    } else {
+      console.error('No se ha seleccionado ningún archivo.');
+    }
+
+  }
+
+  const handleCancelar = () => {
+    setImagen(null)
+    setFileSelected(false)
+  }
+
+ 
+  /**
+  * Token de autenticación.
+  * @const {string} token 
+  */
+  const token = localStorage.getItem('token');
+  /**
+  * Configuración para las solicitudes HTTP que requieren autenticación.
+  * @const {object} config
+  * @property {object} headers - Cabeceras de la solicitud HTTP.
+  * @property {string} headers.Authorization - Cabecera de autorización con el token.
+  */ 
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+
+
+  /**
+  * Pide procesar la URL a la API.
+  *
+  * @async
+  * @method
+  * @param {String} url
+  * @returns {String} 
+  * @throws {Error} - Si ocurre un error durante la solicitud de autenticación.
+  * @memberof module:URLPicker
+  */ 
+  const handleProcesarClick = async () => {
+    
+    console.log(urlValue);
+
+    try {
+
+      const response = await axios.post(`http://${userConfig.serverIP}:${userConfig.serverPort}/procesar_url`, { url: urlValue }, config)
+      
+      console.log(response.data);                                     //QUITAR
+      setImagen(`data:image/png;base64, ${response.data.imagen}`)
+      setFileSelected(true)
+        
+    } catch (error) {
+      try{
+        if (error.response.status == 401){
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "La sesión ha caducado"
+          })
+          window.location.reload();
+
+        }else{
+          if (error.response.data.error){
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: error.response.data.error
+            })
+          }else{
+            Swal.fire({
+              icon: 'error',
+              title: 'Oops...',
+              text: error.message
+            })
+          }
+        }
+      }catch{
+        console.error(error)
+      }
+
+    }
+  }
+
+  /**
+  * Manejadora del evento de cambio de la URL del formulario.
+  *
+  * @method
+  * @param {Event} event
+  * @returns {String}
+  * @memberof module:URLPicker
+  * @name handleUrlChange
+  */
+  const handleUrlChange = (event) => {
+    setUrlValue(event.target.value); // Actualiza el estado con el valor ingresado por el usuario
+
+  };
+  //#endregion
+
+  //#region DECLARACION POP-UP CENTRAR ------------------------------------------------------------------------
+  /**
+  * Control del popUp de recorte.
+  * @const {boolean} popUpCentrar 
+  */
+  const [popUpCentrar, setPopUpCentrar] = useState(false)
+  /**
+  * Control para saber si la imagen ha sido recortada..
+  * @const {boolean} imagenRecortada 
+  */
+  const [imagenRecortada, setImagenRecortada] = useState(false)
+
+  useEffect(() => {    
+    setImagenRecortada(false)
+  },[fileSelected])
+
+  const alertRecorte = () => {
+    f7.dialog.alert('Por favor, centre la imagen antes de analizar.');
+  };
+  /**
+  * Manejadora para abrir el popUp de recorte.
+  *
+  * @method
+  * @memberof module:URLPicker
+  * @name handleCentrar
+  */
+  const handleCentrar = () => {
+    setPopUpCentrar(true)
+  }
+  /**
+  * Manejadora para cerrar el popUp de recorte.
+  *
+  * @method
+  * @memberof module:URLPicker
+  * @name handleCentrar
+  */
+  const closePopUpCentrar = () => {
+    setPopUpCentrar(false)
+  }
+  //#endregion
+
+
+
+  return (
+    &lt;Block>
+      &lt;div className="grid grid-cols-2 grid-gap">
+        &lt;Input
+            label="URL"
+            type="url"
+            placeholder="Your URL"
+            info="Introduce una URL"
+            required
+            validate
+            onValidate={handleValidate}
+            clearButton
+            onChange={handleUrlChange}
+        >
+            &lt;Icon icon="demo-list-icon" slot="media" />
+        &lt;/Input> 
+
+        &lt;Button fill onClick={inputValid ? handleSeleccionar : alertValid} color="teal" style={{ fontSize: '20px' }}>
+          &lt;MdInsertPhoto style={{ margin: '0 5px', fontSize: '20px' }} />
+          Seleccionar
+        &lt;/Button>    
+        
+        &lt;br/>  
+      &lt;/div>
+
+      &lt;div>
+      {fileSelected &amp;&amp; (
+        &lt;div style={{display: 'grid', gridTemplateColumns: '35% 65%', alignItems: 'center'}}>
+          &lt;img src={imagen}  style={{ borderRadius: '8px', width: "100%", height: '170px', objectFit:'cover', border: '2px solid teal' }}/>
+          &lt;div style={{width: '95%', margin:'0 5%'}}> 
+            &lt;Button fill  color="pink" onClick={handleCancelar} style={{margin:'0'}}>Cancelar&lt;/Button>
+            &lt;Button fill  color="teal" onClick={handleCentrar} style={{margin:'7% 0'}}>Centrar Imagen&lt;/Button>
+            &lt;Button fill
+                    onClick={imagenRecortada ? handleAnalizar : alertRecorte} 
+                    style={{backgroundColor: imagenRecortada ? "#006689" : "gray"}}
+                    >Analizar&lt;/Button>  
+          &lt;/div>
+        &lt;/div>
+
+      )}
+      &lt;PopUpCropper showPopup={popUpCentrar} closePopup={closePopUpCentrar} imagen={imagen} setImagen={setImagen} setRecortado={setImagenRecortada}/>
+    &lt;/div>    
+
+
+    &lt;/Block> 
+  );
+};
+export default URLPicker;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Calendario.html">Calendario</a></li><li><a href="module-ChangePasswd.html">ChangePasswd</a></li><li><a href="module-CodeValidationPopup.html">CodeValidationPopup</a></li><li><a href="module-Contacto.html">Contacto</a></li><li><a href="module-Cribado.html">Cribado</a></li><li><a href="module-Estadisticas.html">Estadisticas</a></li><li><a href="module-FilePicker.html">FilePicker</a></li><li><a href="module-Galeria.html">Galeria</a></li><li><a href="module-HomePage.html">HomePage</a></li><li><a href="module-Landing.html">Landing</a></li><li><a href="module-Login.html">Login</a></li><li><a href="module-MainApp.html">MainApp</a></li><li><a href="module-PerfilPage.html">PerfilPage</a></li><li><a href="module-PopUpAmpliar.html">PopUpAmpliar</a></li><li><a href="module-PopUpAmpliarGaleria.html">PopUpAmpliarGaleria</a></li><li><a href="module-PopUpBody.html">PopUpBody</a></li><li><a href="module-PopUpCropper.html">PopUpCropper</a></li><li><a href="module-PopUpRegistrarse.html">PopUpRegistrarse</a></li><li><a href="module-PopUpResultados.html">PopUpResultados</a></li><li><a href="module-URLPicker.html">URLPicker</a></li></ul><h3>Global</h3><ul><li><a href="global.html#BuscadorPacientesPopUp">BuscadorPacientesPopUp</a></li><li><a href="global.html#InstruccionesPopup">InstruccionesPopup</a></li><li><a href="global.html#MyApp">MyApp</a></li><li><a href="global.html#NotFoundPage">NotFoundPage</a></li><li><a href="global.html#Tipos">Tipos</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Aug 07 2024 11:22:41 GMT+0200 (hora de verano de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

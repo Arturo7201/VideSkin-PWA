@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/change-pass.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/change-pass.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState} from 'react';
+import styled from 'styled-components';
+import Swal from 'sweetalert2';
+
+import axios from 'axios';
+import { userConfig } from '../js/config';
+
+import {
+  List,
+  ListInput,
+  Icon
+} from 'framework7-react';
+
+/**
+* @module ChangePasswd
+*/
+
+/**
+* ChangePasswd Page
+*
+* Este componente representa la página para cambiar la contraseña del usuario.
+*
+* @returns {JSX.Element} 
+*/
+export function CahngePasswd  ()  {
+  /**
+  * Token de autenticación.
+  * @const {string} token 
+  */
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  /**
+  * Configuración para las solicitudes HTTP que requieren autenticación.
+  * @const {object} config
+  * @property {object} headers - Cabeceras de la solicitud HTTP.
+  * @property {string} headers.Authorization - Cabecera de autorización con el token.
+  */ 
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+
+  //------------------------------ CHECK BOX -------------------------------------------------------------------------------------------------------------------------
+  const [isChecked, setIsChecked] = useState(false);
+  const handleCheckboxChange = (event) => {
+    setIsChecked(event.target.checked);
+  };
+
+ //------------------------------ VARIABLES CONTRASEÑA -------------------------------------------------------------------------------------------------------------------------
+  /**
+  * Formulario de las contraseñas.
+  * @const {string} userData 
+  */ 
+  const [userData, setUserData] = useState({
+    password: '',
+    password2: ''
+  });
+  
+  //------------------------------ CONTRASEÑAS IGUALES -------------------------------------------------------------------------------------------------------------------------
+  const [isValidPassword, setIsValidPassword] = useState(true);
+  const handlePasswordConfirmation = (e) => {
+    const inputValue = e.target.value;
+
+    if (userData.password === inputValue) {
+      setIsValidPassword(true);
+      //setUserData({ ...userData, password2: inputValue });
+
+    } else {
+      setIsValidPassword(false)
+    }
+
+  };
+
+  //------------------------------ CAMBIAR CONTRASEÑA -------------------------------------------------------------------------------------------------------------------------
+  /**
+  * Manejadora para comprobar la validez de la contraseña.
+  *
+  * @method
+  * @param {String} password
+  * @returns {boolean}
+  * @memberof module:Galeria
+  * @name isPasswordValidFormat
+  */  
+  const isPasswordValidFormat = (password) => {
+    const regex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,16}$/;
+    return regex.test(password);
+  };
+
+  /**
+  * Manejadora para cambiar la contraseña.
+  *
+  * @method
+  * @memberof module:Galeria
+  * @name handleSubmit
+  */ 
+  const handleSubmit = () => {
+    if (isChecked) {
+      if(userData.password === userData.password2){
+        if(isPasswordValidFormat(userData.password)){
+          console.log(userData)
+          cahngePasswd()
+        }else{
+          Swal.fire({
+            icon: 'error',
+            title: 'Opss...',
+            text: "Formato de contraseña invalido."
+          })
+        }
+      }else{
+        Swal.fire({
+          icon: 'error',
+          title: 'Opss...',
+          text: "Las contraseñas no coinciden."
+        })
+      }
+    } else {
+      Swal.fire({
+        icon: 'info',
+        text: "Confirme que desea cambiar la contraseña"
+      })
+    }
+  }
+
+  /**
+  * Peticion de cambioo de contraseña a la API.
+  *
+  * @async
+  * @method
+  * @param {Object} userData
+  * @throws {Error} - Si ocurre un error durante la solicitud de autenticación.
+  * @memberof module:Galeria
+  */   
+  async function cahngePasswd() {
+    try {
+      const response = await axios.post(`http://${userConfig.serverIP}:${userConfig.serverPort}/changePassword`, userData, config );
+      Swal.fire({
+        icon: 'success',
+        text: response.data.mensage
+      })
+      setUserData({
+        password: '',
+        password2: ''
+      })
+        
+    } catch (error) {
+      try{
+        if (error.response.status == 401){
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "La sesión ha caducado"
+          })
+          window.location.reload();
+
+        }else{
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: error.response.data.error
+          })
+        }
+      }catch{
+        console.error(error.message)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: error.message
+        })
+      }
+    }
+  }
+
+  
+return(
+
+  &lt;div >  
+
+
+
+
+
+    &lt;div class="cardS" >
+
+        &lt;h5 class="card-header">Cambiar contraseña&lt;/h5>
+        &lt;div class="card-bodyS" style={{paddingTop: '0px'}}>
+            &lt;div>
+                &lt;div class="cardS-orange">
+                    &lt;h6 class="header-orange">¿Estas seguro de que deseas cambiar la contraseña?&lt;/h6>
+                    &lt;p class="body-orange">Asegurate de guardar la nueva contraseña y confirma que deseas cambiarla.&lt;/p>
+                &lt;/div>
+            &lt;/div>
+            &lt;List>
+
+
+              &lt;ListInput
+                id="contraseña"
+                label="Contraseña"
+                type="password"
+                placeholder="Contraseña"
+                info=""
+                pattern="^(?=\w*\d)(?=\w*[A-Z])(?=\w*[a-z])\S{8,16}$"
+                errorMessage="¡Entre 8 y 16 caracteres, dígitos, minúsculas y mayúsculas!"
+                required
+                validate
+                value={userData.password}
+                clearButton
+                onInput={(e) => setUserData({ ...userData, password: e.target.value })}
+                >
+                &lt;Icon material="password" slot='media'/>
+              &lt;/ListInput>
+
+              &lt;ListInput
+                id="confirmeContraseña"
+                label="Confirme Contraseña"
+                type="password"
+                placeholder="Repeat password"
+                info=""
+                errorMessage="¡Las contraseñas son distitas!"
+                errorMessageForce={!isValidPassword}
+                clearButton
+                value={userData.password2}
+                onInput={(e) => {
+                  setUserData({ ...userData, password2: e.target.value });
+                  handlePasswordConfirmation(e);
+                }}
+                >
+                &lt;Icon material="password" slot='media'/>
+              &lt;/ListInput>
+
+
+            &lt;/List>
+            &lt;form id="formAccountDeactivation" onSubmit={(e) => e.preventDefault()}>
+                &lt;div class="fot-orange">
+                    &lt;input class="form-check-input" type="checkbox" name="accountActivation" id="accountActivation" checked={isChecked} onChange={handleCheckboxChange}/>
+                    &lt;label class="form-check-label" for="accountActivation">Confirmo que deseo cambiar la contraseña&lt;/label>
+                &lt;/div>
+                &lt;button type="submit" onClick={handleSubmit} class="butonS2">Cambiar Contraseña&lt;/button>
+            &lt;/form>
+        &lt;/div>
+    &lt;/div>
+
+
+  &lt;/div>
+  
+);
+}
+export default CahngePasswd;
+
+const Container =styled.div`
+
+  max-width: 700px; /* Ancho máximo de 500px */
+  height: auto;
+  margin: auto;
+`
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Calendario.html">Calendario</a></li><li><a href="module-ChangePasswd.html">ChangePasswd</a></li><li><a href="module-CodeValidationPopup.html">CodeValidationPopup</a></li><li><a href="module-Contacto.html">Contacto</a></li><li><a href="module-Cribado.html">Cribado</a></li><li><a href="module-Estadisticas.html">Estadisticas</a></li><li><a href="module-FilePicker.html">FilePicker</a></li><li><a href="module-Galeria.html">Galeria</a></li><li><a href="module-HomePage.html">HomePage</a></li><li><a href="module-Landing.html">Landing</a></li><li><a href="module-Login.html">Login</a></li><li><a href="module-MainApp.html">MainApp</a></li><li><a href="module-PerfilPage.html">PerfilPage</a></li><li><a href="module-PopUpAmpliar.html">PopUpAmpliar</a></li><li><a href="module-PopUpAmpliarGaleria.html">PopUpAmpliarGaleria</a></li><li><a href="module-PopUpBody.html">PopUpBody</a></li><li><a href="module-PopUpCropper.html">PopUpCropper</a></li><li><a href="module-PopUpRegistrarse.html">PopUpRegistrarse</a></li><li><a href="module-PopUpResultados.html">PopUpResultados</a></li><li><a href="module-URLPicker.html">URLPicker</a></li></ul><h3>Global</h3><ul><li><a href="global.html#BuscadorPacientesPopUp">BuscadorPacientesPopUp</a></li><li><a href="global.html#InstruccionesPopup">InstruccionesPopup</a></li><li><a href="global.html#MyApp">MyApp</a></li><li><a href="global.html#NotFoundPage">NotFoundPage</a></li><li><a href="global.html#Tipos">Tipos</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Aug 07 2024 11:22:41 GMT+0200 (hora de verano de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/perfil.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/perfil.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import Swal from 'sweetalert2';
+
+import axios from 'axios';
+import { userConfig } from '../js/config';
+
+
+
+/**
+* @module PerfilPage
+*/
+
+/**
+* PerfilPage Page
+*
+* Este componente representa la página del perfil de la aplicación.
+*
+* @returns {JSX.Element} 
+*/
+
+export function PerfilPage  ()  {
+  /**
+  * Token de autenticación.
+  * @const {string} token 
+  */
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  /**
+  * Configuración para las solicitudes HTTP que requieren autenticación.
+  * @const {object} config
+  * @property {object} headers - Cabeceras de la solicitud HTTP.
+  * @property {string} headers.Authorization - Cabecera de autorización con el token.
+  */
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+
+  //region --------- DATA PERFIL ------------------------------------------------------------------------------------------------------------
+  const [fileImagen, setFileImagen] = useState(null)
+  /**
+  * Imagen de perfil.
+  * @const {String} perfilImage 
+  */
+  const [perfilImage, setPerfilImage] = useState(null);
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    console.log(e)
+    console.log(file)
+    if (file) {
+      setFileImagen(file);
+
+      // Crear una URL de vista previa para la imagen seleccionada
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPerfilImage(reader.result.split(',')[1]);
+      };
+      reader.readAsDataURL(file);
+      console.log(file)
+      console.log(perfilImage)
+    }
+  };
+  /**
+  * Datos del perfil del usuario.
+  * @const {String} perfilImage 
+  */
+  const [userData, setUserData] = useState({
+    name: '',
+    surname: '',
+    email: '',
+    username: ''
+  });
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setUserData({
+      ...userData,
+      [name]: value
+    });
+  };
+
+  useEffect(() => {
+    
+    const fetchUserData = async () => {
+      try {
+        fetchPerfil()
+      } catch (error) {
+        console.error('Error fetching user data:', error);
+      }
+    };
+
+    fetchUserData();
+    console.log(userData)
+  }, []);
+
+  /**
+  * Peticion a la API de los datos del usuario.
+  *
+  * @async
+  * @method
+  * @returns {Promise&lt;Object>} -Perfil del usuario
+  * @throws {Error} - Si ocurre un error durante la solicitud de autenticación.
+  * @memberof module:PerfilPage
+  */   
+ async function fetchPerfil() {
+    try {
+      const response = await axios.get(`http://${userConfig.serverIP}:${userConfig.serverPort}/userData`, config );
+      setUserData({
+        name: response.data.data.name,
+        surname: response.data.data.surname,
+        email: response.data.data.email,
+        username: response.data.data.username
+      });
+
+      const response2 = await axios.post(`http://${userConfig.serverIP}:${userConfig.serverPort}/perfilImage`, {id: null}, config);
+      setPerfilImage(response2.data.imagen);
+        
+    } catch (error) {
+      console.log(error)
+      try{
+        if (error.response.status == 401){
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "La sesión ha caducado"
+          })
+          //window.location.reload();
+
+        }else{
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: error.response.data.error
+          })
+        }
+      }catch{
+        console.error(error.message)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: error.message
+        })
+      }
+    }
+  }
+  //region ---------- MOD PERFIL  -------------------------------------------------------------------------------------------------------------
+
+
+  const handleMod = () => {
+    console.log(userData)
+    uploadInfo()
+
+  }
+
+  /**
+  * Peticion a la API de modificación los datos del usuario.
+  *
+  * @async
+  * @method
+  * @param {Promise&lt;Object>} userData -Perfil del usuario
+  * @throws {Error} - Si ocurre un error durante la solicitud de autenticación.
+  * @memberof module:PerfilPage
+  */  
+  async function uploadInfo() {
+    try {
+      const response = await axios.post(`http://${userConfig.serverIP}:${userConfig.serverPort}/setPerfilImage`, {imagen: perfilImage}, config );
+
+      const response2 = await axios.post(`http://${userConfig.serverIP}:${userConfig.serverPort}/userData`, userData, config);
+      Swal.fire({
+        icon: 'success',
+        text: response2.data.mensage
+      })
+        
+    } catch (error) {
+      try{
+        if (error.response.status == 401){
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "La sesión ha caducado"
+          })
+          window.location.reload();
+
+        }else{
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: error.response.data.error
+          })
+        }
+      }catch{
+        console.error(error.message)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: error.message
+        })
+      }
+    }
+  }
+
+  //region ---------- ELIMINAR CUENTA ---------------------------------------------------------------------------------------------------------
+
+  const [isChecked, setIsChecked] = useState(false);
+  const handleCheckboxChange = (event) => {
+    setIsChecked(event.target.checked);
+  };
+
+  const handleBorrar = (event) => {
+    event.preventDefault();
+    if (isChecked) {
+        eliminarCuenta()
+        localStorage.removeItem('token');
+        sessionStorage.removeItem('token');
+        window.location.reload();
+    } else {
+      Swal.fire({
+        icon: 'warning',
+        text: "Confirme que desea BORRAR la cuenta."
+      })
+    }
+  }
+  /**
+  * Peticion a la API de borrar la cuenta del usuario.
+  *
+  * @async
+  * @method
+  * @throws {Error} - Si ocurre un error durante la solicitud de autenticación.
+  * @memberof module:PerfilPage
+  */ 
+  async function eliminarCuenta() {
+    try {
+      const response = await axios.get(`http://${userConfig.serverIP}:${userConfig.serverPort}/delete`, config);
+
+      console.log(response);
+      localStorage.removeItem('token');
+      window.location.reload();
+      
+    }catch (error) {
+      try{
+        if (error.response.status == 401){
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "La sesión ha caducado"
+          })
+          window.location.reload();
+
+        }else{
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: error.response.data.error
+          })
+        }
+      }catch{
+        console.error(error)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: error
+        })
+      }
+    }
+  }
+
+return(
+  
+  &lt;div >  
+  &lt;div className='cardS'>
+          &lt;div class="card-bodyS">
+              &lt;div class="d-flexS">
+                  &lt;img src={`data:image/png;base64, ${perfilImage}`} class="imgS" height="100" width="100" id="uploadedAvatar"/>
+                  
+                  &lt;div>
+
+                    &lt;label class="butonS" style={{display: 'inline-block'}}>
+                      &lt;span style={{fontSize: '1.25rem'}}>Upload new photo&lt;/span>
+                      &lt;i class="">&lt;/i>
+                      &lt;input style={{ margin:'0', fontFamily: 'inherit', fontSize: 'inherit', lineHeight: 'inherit'}}
+                        type="file"
+                        id="upload"
+                        class="account-file-input"
+                        hidden
+                        accept="image/png, image/jpeg"
+                        onChange={handleImageChange}
+                      />
+                    &lt;/label>
+                    
+        
+
+
+                    &lt;p class="textS">Allowed JPG, GIF or PNG. Max size of 800K&lt;/p>
+                  &lt;/div>
+
+                
+              &lt;/div>
+          &lt;/div>
+      &lt;/div>
+
+      &lt;div>
+          &lt;div>
+              &lt;div class="cardS" >     
+
+                  &lt;div class="card-bodyS">
+                
+                          &lt;div class="rowS">
+
+                              &lt;div class="bloqueInput">
+                                  &lt;label  class="form-label">Nombre&lt;/label>
+                                  &lt;input class="form-control"
+                                      type="text" 
+                                      id="name" 
+                                      name="name" 
+                                      value={userData.name} 
+                                      onChange={handleInputChange}/>
+                              &lt;/div>
+
+                              &lt;div class="bloqueInput">
+                                  &lt;label  class="form-label">Apellidos&lt;/label>
+                                  &lt;input class="form-control" type="text" name="surname" id="surname" value={userData.surname} onChange={handleInputChange}/>
+                              &lt;/div>
+
+                              &lt;div class="bloqueInput">
+                                  &lt;label class="form-label">E-mail&lt;/label>
+                                  &lt;input class="form-control" type="text" id="email" name="email" value={userData.email} onChange={handleInputChange} placeholder="john.doe@example.com"/>
+                              &lt;/div>
+                              &lt;div class="bloqueInput">
+                                  &lt;label class="form-label">Usuario&lt;/label>
+                                  &lt;input type="text" class="form-control" id="username" name="username" value={userData.username} readOnly/>
+                              &lt;/div>
+
+
+                            
+                          &lt;/div>
+                          &lt;div >
+                              &lt;button onClick={handleMod} class="butonS" style={{marginBottom: '0'}}>Guardar cambios&lt;/button>
+                          &lt;/div>
+                      
+                  &lt;/div>
+
+              &lt;/div>
+
+              &lt;div class="cardS">
+
+                  &lt;h5 class="card-header">Borrar cuenta&lt;/h5>
+                  &lt;div class="card-bodyS" style={{paddingTop: '0px'}}>
+                      &lt;div>
+                          &lt;div class="cardS-orange">
+                              &lt;h6 class="header-orange">¿Estas seguro de que deseas borrar la cuenta?&lt;/h6>
+                              &lt;p class="body-orange">No podra ser recuperada una vez borrada, porfavor confirma que deseas eliminarla.&lt;/p>
+                          &lt;/div>
+                      &lt;/div>
+                      &lt;form id="formAccountDeactivation" onSubmit={(e) => e.preventDefault()}>
+                          &lt;div class="fot-orange">
+                              &lt;input class="form-check-input" type="checkbox" name="accountActivation" checked={isChecked} onChange={handleCheckboxChange}/>
+                              &lt;label class="form-check-label" >Confirmo que deseo borrar la cuenta&lt;/label>
+                          &lt;/div>
+                          &lt;button type="submit" onClick={handleBorrar} class="butonS2">Borrar cuenta&lt;/button>
+                      &lt;/form>
+                  &lt;/div>
+              &lt;/div>
+          &lt;/div>
+      &lt;/div>
+
+  &lt;/div>
+  
+);
+}
+export default PerfilPage;
+
+const Container =styled.div`
+
+  max-width: 700px; /* Ancho máximo de 500px */
+  height: auto;
+  margin: auto;
+`
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Calendario.html">Calendario</a></li><li><a href="module-ChangePasswd.html">ChangePasswd</a></li><li><a href="module-CodeValidationPopup.html">CodeValidationPopup</a></li><li><a href="module-Contacto.html">Contacto</a></li><li><a href="module-Cribado.html">Cribado</a></li><li><a href="module-Estadisticas.html">Estadisticas</a></li><li><a href="module-FilePicker.html">FilePicker</a></li><li><a href="module-Galeria.html">Galeria</a></li><li><a href="module-HomePage.html">HomePage</a></li><li><a href="module-Landing.html">Landing</a></li><li><a href="module-Login.html">Login</a></li><li><a href="module-MainApp.html">MainApp</a></li><li><a href="module-PerfilPage.html">PerfilPage</a></li><li><a href="module-PopUpAmpliar.html">PopUpAmpliar</a></li><li><a href="module-PopUpAmpliarGaleria.html">PopUpAmpliarGaleria</a></li><li><a href="module-PopUpBody.html">PopUpBody</a></li><li><a href="module-PopUpCropper.html">PopUpCropper</a></li><li><a href="module-PopUpRegistrarse.html">PopUpRegistrarse</a></li><li><a href="module-PopUpResultados.html">PopUpResultados</a></li><li><a href="module-URLPicker.html">URLPicker</a></li></ul><h3>Global</h3><ul><li><a href="global.html#BuscadorPacientesPopUp">BuscadorPacientesPopUp</a></li><li><a href="global.html#InstruccionesPopup">InstruccionesPopup</a></li><li><a href="global.html#MyApp">MyApp</a></li><li><a href="global.html#NotFoundPage">NotFoundPage</a></li><li><a href="global.html#Tipos">Tipos</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Aug 07 2024 11:22:41 GMT+0200 (hora de verano de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

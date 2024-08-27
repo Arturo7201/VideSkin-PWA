@@ -1,0 +1,1057 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/landing.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/landing.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useEffect, useState } from 'react';
+
+import RegisterPage from '../components/popup-register'
+import ContactPage from './contact-us';
+
+import { IoMenu } from "react-icons/io5";
+import { FaArrowLeft } from "react-icons/fa";
+import { FaHouseChimneyMedical } from "react-icons/fa6";
+import { FaUserDoctor } from "react-icons/fa6";
+import { IoMdSchool } from "react-icons/io";
+import { FaSun } from "react-icons/fa6";
+import { IoBody } from "react-icons/io5";
+import { MdArrowBack } from 'react-icons/md';
+
+
+import styled from 'styled-components';
+
+
+
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+
+import axios from 'axios';
+import { userConfig } from '../js/config';
+
+import Swal from 'sweetalert2';
+
+// Import Swiper React components
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+// Import Swiper styles
+import 'swiper/css';
+import '../css/landing.css'
+
+import {
+  f7,
+  Page,
+  Navbar,
+  NavTitle,
+  NavTitleLarge,
+  LoginScreenTitle,
+  View,
+  Link,
+  NavRight,
+  Panel,
+  BlockFooter,
+  Button,
+  Segmented,
+  Block,
+  BlockTitle,
+  ListGroup,
+  ListItem,
+  Popup,
+} from 'framework7-react';
+
+
+/**
+* @module Landing
+*/
+
+
+/**
+* Landing Page
+*
+* Este componente representa la página landing.
+*
+* @returns {JSX.Element} 
+*/
+const LandingPage = () => {
+    
+  //#region ------ RESPONSIVE RENDER ---------------------------------------------------------------------------
+
+    const [isMobile, setIsMobile] = useState(false);
+    const [isMobile_1200, setIsMobile_1200] = useState(false);
+    const [isMobile2, setIsMobile2] = useState(false);
+    /**
+     * Efecto que verifica si la pantalla es lo suficientemente estrecha
+     * y ajusta el estado `isMobile` en consecuencia. También agrega un listener
+     * para el evento `resize` que vuelve a verificar el tamaño de la pantalla
+     * cada vez que la ventana se redimensiona.
+     *
+     * @method
+     * @returns {boolean} 
+     * @memberof module:Landing
+     * @name useEffect
+     */
+    useEffect(() => {
+        // Función para comprobar si la pantalla es lo suficientemente estrecha 
+        const checkIfMobile = () => {
+            setIsMobile(window.innerWidth &lt;= 820); // Ajusta este valor 
+        };
+        const checkIfMobile1200 = () => {
+            setIsMobile_1200(window.innerWidth &lt;= 1420); // Ajusta este valor 
+        };
+        const checkIfMobile2 = () => {
+            setIsMobile2(window.innerWidth &lt;= 500); // Ajusta este valor 
+        };
+
+        // Llama a la función de comprobación cuando se carga la página y cada vez que se redimensiona la ventana
+        checkIfMobile();
+        checkIfMobile1200();
+        checkIfMobile2();
+
+        window.addEventListener('resize', checkIfMobile);
+        window.addEventListener('resize', checkIfMobile1200);
+        window.addEventListener('resize', checkIfMobile2);
+
+        // Limpia el event listener al desmontar el componente para evitar fugas de memoria
+        return () => {
+            window.removeEventListener('resize', checkIfMobile);
+            window.removeEventListener('resize', checkIfMobile1200);
+            window.removeEventListener('resize', checkIfMobile2);
+        };
+    }, []);
+
+  //#endregion
+
+  //#region ------ POPUP LOGIN REGISTER ------------------------------------------------------------------------
+  /**
+  * Variable de control del popup de registro.
+  * @const {boolean} showPopupReg 
+  */
+  const [showPopupReg, setShowPopupReg] = useState(false);
+  /**
+  * Manejadora para cerrar el popup del registro.
+  *
+  * @method
+  * @memberof module:Landing
+  * @name closePopupReg
+  */ 
+  const closePopupReg = () => {
+    setShowPopupReg(false);
+  }
+
+  /**
+  * Manejadora para abrir el popup del registro.
+  *
+  * @method
+  * @memberof module:Landing
+  * @name handleSignUp
+  */ 
+  const handleSignUp = () => {
+    setShowPopupReg(true)
+  }
+  
+  /**
+  * Manejadora para navegar ala pagina de inicio de sesión.
+  *
+  * @method
+  * @memberof module:Landing
+  * @name handleLogIn
+  */
+  const handleLogIn = () => {
+    f7.views.main.router.navigate('/login/');
+  }
+
+  //#endregion
+
+  //#region ------ PANEL                ------------------------------------------------------------------------
+
+  const handleMenu = () => {
+    f7.panel.open('left');
+  }
+
+  //#endregion
+
+  //#region ------ CONTACT            --------------------------------------------------------------------------
+  /**
+  * Variable de control del popup de registro.
+  * @const {boolean} showPopupReg 
+  */
+  const [showContactUs, setContactUs] = useState(false)
+  /**
+  * Manejadora para cerrar el popup de contacto.
+  *
+  * @method
+  * @memberof module:Landing
+  * @name closeContactUs
+  */
+  const closeContactUs = () => {
+    setContactUs(false)
+  }
+  /**
+  * Manejadora para abrir el popup de contacto.
+  *
+  * @method
+  * @memberof module:Landing
+  * @name handleContact
+  */
+  const handleContact = () => {
+    setContactUs(true)
+  }
+  /**
+  * Variable formulario del mensaje de contacto.
+  * @const {boolean} data 
+  */
+  const [data, setData] = useState({
+    email: '',
+    user: '',
+    mensaje : ''
+  })
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setData(prevData => ({
+      ...prevData,
+      [name]: value
+    }));
+  };
+  /**
+  * Manejadora para mandar el mensaje de contacto.
+  *
+  * @method
+  * @memberof module:Landing
+  * @name handleEnviar
+  */
+  const handleEnviar = () => {
+    console.log("h",data)
+    if(data.email === '' || data.user === '' || data.mensaje === ''){
+        Swal.fire({
+            icon: 'error',
+            text: 'Faltan datos'
+        })
+    }else {
+        uploadInfo()
+    }
+  }
+
+  /**
+  * Peticion a la API para mandar el mensaje de contacto.
+  *
+  * @method
+  * @param {Object} data
+  * @throws {Error}
+  * @memberof module:Landing
+  */
+  async function uploadInfo() {
+    try {
+      const response = await axios.post(`http://${userConfig.serverIP}:${userConfig.serverPort}/contactUs_simple`, {email: data.email, user: data.user, mensaje: data.mensaje});
+
+      Swal.fire({
+        icon: 'success',
+        text: response.data.mensage
+      })
+      setData({
+        email: '',
+        user: '',
+        mensaje : ''
+      })
+      closeContactUs()
+        
+    } catch (error) {
+      try{
+        Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: error.response.data.error
+        })
+      }catch{
+        console.error(error.message)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: error.message
+        })
+      }
+    }
+  }
+  //#endregion
+
+  //#region ------ SLIDER             -------------------------------------------------------------------------
+
+  const handleCancer = () => {
+    f7.views.main.router.navigate('/tipos/');
+  }
+
+  const handleSol = () => {
+
+  }
+
+  const handleTecnology = () => {
+
+  }
+
+  //#endregion
+
+
+  return(
+
+    &lt;div className="page">
+
+        {isMobile ? (
+
+            &lt;div className="navbar" style={{display: 'grid', gridTemplateColumns: ' 1% 40px 20% 70%', background: 'teal', color: '#ffffff', textAlign: 'center', alignItems: 'center',  fontSize: '170%', lineHeight: '250%'}}>
+                
+                &lt;div/>
+                &lt;IoMenu onClick={handleMenu} style={{width: '100%', fontSize: '40px', color:'white'}}/>
+                
+                &lt;div onClick={handleMenu} style={{width: '100%', fontSize: '120%'}}>
+                        VideSkin
+                &lt;/div>
+
+                {isMobile2 ? (
+                            &lt;div/>
+                            ) : (
+                                &lt;div style={{display: 'grid', placeItems: 'end'}}>
+                                &lt;div style={{maxWidth: '300px'}}>
+                                    &lt;div className='grid grid-cols-2 grid-gap'>
+                                        &lt;Button className="login-button" large tonal raised style={{fontSize:'20px', ':hover': { color: '#091e28' }}} onClick={handleLogIn} >LOGIN&lt;/Button>
+                                        &lt;Button className="login-button" large tonal raised style={{fontSize: '20px', ':hover': { color: '#091e28' }}} onClick={handleSignUp} >SINGUP&lt;/Button>
+                                    &lt;/div>
+                                &lt;/div>
+                                &lt;/div>
+
+                            )}
+
+            &lt;/div>  
+
+            
+
+        ) : (
+
+            &lt;div className="navbar" style={{height: '7%', display: 'grid', gridTemplateColumns: '13% 60% 1% 25%', background: 'teal', color: '#ffffff', textAlign: 'center', alignItems: 'center',  fontSize: '170%', lineHeight: '250%'}}>
+                &lt;span style={{ textAlign: 'center'}}>VideSkin&lt;/span>
+                
+                &lt;div className='grid grid-cols-3 grid-gap'style={{maxWidth: '700px'}}>
+                    &lt;Button onClick={handleContact} style={{fontSize: '15px', color:'white'}}>Contacta con nosotros&lt;/Button>
+                    &lt;div/>
+                &lt;/div>
+                &lt;div/>
+                &lt;div style={{display: 'grid', placeItems: 'end'}}>
+                &lt;div style={{maxWidth: '300px'}}>
+                    &lt;div className='grid grid-cols-2 grid-gap'>
+                        &lt;Button className="login-button" large tonal raised style={{fontSize:'20px', ':hover': { color: '#091e28' }}} onClick={handleLogIn} >LOGIN&lt;/Button>
+                        &lt;Button className="login-button" large tonal raised style={{fontSize: '20px', ':hover': { color: '#091e28' }}} onClick={handleSignUp} >SINGUP&lt;/Button>
+                    &lt;/div>
+                &lt;/div>
+                &lt;/div>
+            &lt;/div>  
+        )}
+
+      &lt;div className="page-content">
+
+        &lt;Panel left cover containerEl="#panel-page" id="left">
+            &lt;div className="panel panel-resizable panel-left panel-floating panel-in">
+                &lt;div className="view">
+                    &lt;div className="page page-current">
+                    &lt;div className="page-content">
+                        &lt;div className="block-title" style={{height: '30px', fontSize: '20px'}}>
+                            &lt;FaArrowLeft className="link panel-close" style={{fontSize: '15px'}}/> Menú de navegación&lt;/div>
+                        &lt;div className="list">
+                            &lt;ul>
+
+
+                                &lt;li className="">
+                                    &lt;a className="item-link panel-close">
+                                        &lt;div className="item-content">
+                                            &lt;div className="item-inner">
+                                                &lt;div onClick={handleContact} className="item-title">Contacta con nosotros&lt;/div>
+                                            &lt;/div>
+                                        &lt;/div>
+                                    &lt;/a>
+                                &lt;/li>
+                            &lt;/ul>
+                        &lt;/div>
+
+                        &lt;div className="block-title">Acceder a la aplicación&lt;/div>&lt;div className="list">
+                            &lt;ul>
+                                &lt;li className="">
+                                    &lt;a className="item-link panel-close" onClick={handleLogIn}>
+                                        &lt;div className="item-content">
+                                            &lt;div className="item-inner">
+                                                &lt;div className="item-title">Iniciar Sesión&lt;/div>
+                                            &lt;/div>
+                                        &lt;/div>
+                                    &lt;/a>
+                                &lt;/li>
+                                &lt;li className="">
+                                    &lt;a className="item-link panel-close" onClick={handleSignUp}>
+                                        &lt;div className="item-content">
+                                            &lt;div className="item-inner">
+                                                &lt;div className="item-title">Registarse&lt;/div>
+                                            &lt;/div>
+                                        &lt;/div>
+                                    &lt;/a>
+                                &lt;/li>
+                            &lt;/ul>
+                        &lt;/div>
+                        &lt;/div>
+                        &lt;/div>
+                &lt;/div>
+            &lt;/div>
+        &lt;/Panel>
+
+    
+        &lt;br/>
+        &lt;Swiper
+            spaceBetween='2%'
+            slidesPerView={1.75}
+            //onSlideChange={() => console.log('slide change')}
+            onSwiper={(swiper) => console.log(swiper)}
+            loop={true}
+            centeredSlides={true} // Centra el slide activo
+            //navigation // Habilita los botones de navegación
+            style={{ width: '100%', height: '60%' }}
+        >
+            &lt;SwiperSlide className="slide" onClick={handleCancer}>
+                &lt;div className="slide-container" >
+                    &lt;img className="zoom-effect" src="../images/1.jpg" alt="Slide 1" style={{ objectFit: 'cover'}}/>
+                    &lt;div className={isMobile ? 'slide-title-mobile' : 'slide-title'} >Sobre el cancer de piel&lt;/div>
+                &lt;/div>
+            &lt;/SwiperSlide>
+            &lt;SwiperSlide className="slide" onClick={handleSol}>
+                &lt;div className="slide-container" >
+                    &lt;img className="zoom-effect" src="../images/2.jpg" alt="Slide 2" style={{ objectFit: 'cover'}}/>                   
+                    &lt;div className={isMobile ? 'slide-title-mobile' : 'slide-title'} >Sobre la incidencia del sol&lt;/div>
+                &lt;/div>
+            &lt;/SwiperSlide>
+            &lt;SwiperSlide className="slide" onClick={handleTecnology}>
+                &lt;div className="slide-container" >
+                    &lt;img className="zoom-effect" src="../images/3.jpg" alt="Slide 3" style={{ objectFit: 'cover'}}/>
+                    &lt;div className={isMobile ? 'slide-title-mobile' : 'slide-title'} >Sobre la tecnologia utilizada&lt;/div>
+                &lt;/div>
+            &lt;/SwiperSlide>
+            &lt;SwiperSlide className="slide" onClick={handleCancer}>
+                &lt;div className="slide-container" >
+                    &lt;img className="zoom-effect" src="../images/1.jpg" alt="Slide 1" style={{ objectFit: 'cover'}}/>
+                    &lt;div className={isMobile ? 'slide-title-mobile' : 'slide-title'} >Sobre el cancer de piel&lt;/div>
+                &lt;/div>
+            &lt;/SwiperSlide>
+            &lt;SwiperSlide className="slide" onClick={handleSol}>
+                &lt;div className="slide-container" >
+                    &lt;img className="zoom-effect" src="../images/2.jpg" alt="Slide 2" style={{ objectFit: 'cover'}}/>                   
+                    &lt;div className={isMobile ? 'slide-title-mobile' : 'slide-title'} >Sobre la incidencia del sol&lt;/div>
+                &lt;/div>
+            &lt;/SwiperSlide>
+            &lt;SwiperSlide className="slide" onClick={handleTecnology}>
+                &lt;div className="slide-container" >
+                    &lt;img className="zoom-effect" src="../images/3.jpg" alt="Slide 3" style={{ objectFit: 'cover'}}/>
+                    &lt;div className={isMobile ? 'slide-title-mobile' : 'slide-title'} >Sobre la tecnologia utilizada&lt;/div>
+                &lt;/div>
+            &lt;/SwiperSlide>
+
+        &lt;/Swiper>
+
+        {isMobile_1200 ? (
+
+            &lt;div>
+                &lt;Block strong className='white-block'>
+
+                &lt;div className="blog-title" >Utiliza nuestras herramientas para tu bienestar:&lt;/div>
+
+                    &lt;div>       
+                        &lt;div className="blockCalen">
+                            &lt;div style={{display: 'flex', flexDirection: 'column'}}>
+                                &lt;div style={{borderRadius: '16px', height: '100%', display: 'grid', gridTemplateColumns: '20% 80%'}}>
+                                    &lt;div>
+                                        &lt;Cuadrado>
+                                            &lt;svg style={{margin: 'auto'}} width="52" height="63" viewBox="0 0 42 43" fill="none">
+                                                &lt;path fillRule="evenodd"  d="M11.2972 0.266357C12.0265 0.266357 12.6178 0.857615 12.6178 1.58697V9.42809C12.6178 10.1574 12.0265 10.7487 11.2972 10.7487C10.5678 10.7487 9.97656 10.1574 9.97656 9.42809V1.58697C9.97656 0.857615 10.5678 0.266357 11.2972 0.266357Z" fill="#F8560E">&lt;/path>
+                                                &lt;path fillRule="evenodd"  d="M30.223 0.124512C30.9523 0.124512 31.5436 0.715769 31.5436 1.44512V9.28625C31.5436 10.0156 30.9523 10.6069 30.223 10.6069C29.4936 10.6069 28.9023 10.0156 28.9023 9.28625V1.44512C28.9023 0.715769 29.4936 0.124512 30.223 0.124512Z" fill="#F8560E">&lt;/path>
+                                                &lt;path fillRule="evenodd"  d="M8.00391 5.34912H5.26644C2.5434 5.34912 0.335938 7.55658 0.335938 10.2796V38.056C0.335938 40.7791 2.5434 42.9865 5.26644 42.9865H36.8066C39.5296 42.9865 41.7371 40.7791 41.7371 38.056V10.2796C41.7371 7.55658 39.5296 5.34912 36.8066 5.34912H33.4257V9.42732C33.4257 11.2507 31.9475 12.7288 30.1241 12.7288C28.3007 12.7288 26.8226 11.2507 26.8226 9.42732V5.34912H14.607V9.42732C14.607 11.2507 13.1288 12.7288 11.3054 12.7288C9.48205 12.7288 8.00391 11.2507 8.00391 9.42732V5.34912Z" fill="#F8560E">&lt;/path>
+                                                &lt;path d="M9.73343 29.8157C10.7728 29.8157 11.6153 28.9732 11.6153 27.9339C11.6153 26.8945 10.7728 26.052 9.73343 26.052C8.6941 26.052 7.85156 26.8945 7.85156 27.9339C7.85156 28.9732 8.6941 29.8157 9.73343 29.8157Z" fill="white">&lt;/path>
+                                                &lt;path d="M17.2569 29.8156C18.2962 29.8156 19.1387 28.9731 19.1387 27.9338C19.1387 26.8944 18.2962 26.0519 17.2569 26.0519C16.2175 26.0519 15.375 26.8944 15.375 27.9338C15.375 28.9731 16.2175 29.8156 17.2569 29.8156Z" fill="white">&lt;/path>
+                                                &lt;path d="M24.7725 29.8156C25.8118 29.8156 26.6544 28.9731 26.6544 27.9338C26.6544 26.8944 25.8118 26.0519 24.7725 26.0519C23.7332 26.0519 22.8906 26.8944 22.8906 27.9338C22.8906 28.9731 23.7332 29.8156 24.7725 29.8156Z" fill="white">&lt;/path>
+                                                &lt;path d="M32.3077 29.8156C33.347 29.8156 34.1895 28.9731 34.1895 27.9338C34.1895 26.8944 33.347 26.0519 32.3077 26.0519C31.2683 26.0519 30.4258 26.8944 30.4258 27.9338C30.4258 28.9731 31.2683 29.8156 32.3077 29.8156Z" fill="white">&lt;/path>
+                                                &lt;path d="M24.7725 22.2877C25.8118 22.2877 26.6544 21.4451 26.6544 20.4058C26.6544 19.3665 25.8118 18.5239 24.7725 18.5239C23.7332 18.5239 22.8906 19.3665 22.8906 20.4058C22.8906 21.4451 23.7332 22.2877 24.7725 22.2877Z" fill="white">&lt;/path>
+                                                &lt;path d="M32.3077 22.2877C33.347 22.2877 34.1895 21.4451 34.1895 20.4058C34.1895 19.3665 33.347 18.5239 32.3077 18.5239C31.2683 18.5239 30.4258 19.3665 30.4258 20.4058C30.4258 21.4451 31.2683 22.2877 32.3077 22.2877Z" fill="white">&lt;/path>
+                                                &lt;path d="M9.73343 37.3421C10.7728 37.3421 11.6153 36.4996 11.6153 35.4602C11.6153 34.4209 10.7728 33.5784 9.73343 33.5784C8.6941 33.5784 7.85156 34.4209 7.85156 35.4602C7.85156 36.4996 8.6941 37.3421 9.73343 37.3421Z" fill="white">&lt;/path>
+                                                &lt;path d="M17.2569 37.3421C18.2962 37.3421 19.1387 36.4996 19.1387 35.4602C19.1387 34.4209 18.2962 33.5784 17.2569 33.5784C16.2175 33.5784 15.375 34.4209 15.375 35.4602C15.375 36.4996 16.2175 37.3421 17.2569 37.3421Z" fill="white">&lt;/path>
+                                                &lt;path d="M24.7725 37.3421C25.8118 37.3421 26.6544 36.4996 26.6544 35.4602C26.6544 34.4209 25.8118 33.5784 24.7725 33.5784C23.7332 33.5784 22.8906 34.4209 22.8906 35.4602C22.8906 36.4996 23.7332 37.3421 24.7725 37.3421Z" fill="white">&lt;/path>
+                                            &lt;/svg> 
+                                        &lt;/Cuadrado>
+                                    &lt;/div>
+                                    &lt;div style={{margin: '5%'}}>
+                                        &lt;h3 className="tittle-block" >Programa controles y mantén la amenaza baja.&lt;/h3>                                        
+                                    &lt;/div>
+                                &lt;/div>
+                                &lt;div style={{backgroundImage: 'linear-gradient(to bottom, #0e8d43,#107060)', borderRadius: '16px', margin: '20px 0px',  height: '130px', display: 'grid', gridTemplateColumns: '20% 80%'}}>
+                                    &lt;div style={{width: '100%', height: '130px', alignContent: 'center'}}>
+                                        &lt;Rueda>     
+                                            &lt;CircularProgressbar value='33' text='33%' styles={{root: {},
+                                                                                                path: {
+                                                                                                    
+                                                                                                    stroke: '#F77040',
+                                                                                                    strokeLinecap: 'round',
+
+                                                                                                    transition: 'stroke-dashoffset 0.5s ease 0s',
+                                                                                                    transformOrigin: 'center center',
+                                                                                                },
+                                                                                                trail: {
+                                                                                                    stroke: '#d6d6d6',
+                                                                                                    strokeLinecap: 'round',
+                                                                                                    
+                                                                                                    transformOrigin: 'center center',
+                                                                                                },
+                                                                                                text: {
+                                                                                                    
+                                                                                                    fill: 'white',
+                                                                                                    fontSize: '170%',
+                                                                                                    fontWeight: '600'
+                                                                                                },
+                                                                                                // Customize background - only used when the `background` prop is true
+                                                                                                background: {
+                                                                                                    fill: 'black',
+                                                                                                },
+                                                                                                }}/>              
+                
+                                        &lt;/Rueda> 
+                                    &lt;/div>
+                                    &lt;div style={{width: '100%', color: 'white', fontSize: '130%', alignContent:'center'}}>
+                                        &lt;p style={{fontSize: '130%'}}>&lt;span>  Nivel de amenaza:&lt;/span>&lt;strong> Bajo&lt;/strong>&lt;/p>
+
+                                    &lt;/div>
+                                &lt;/div>
+                            &lt;/div>
+                        &lt;/div>
+                                
+                                
+                        &lt;div href="" className="blockCalen">
+                            &lt;div style={{display: 'flex', flexDirection: 'column'}}>
+
+                                &lt;div style={{borderRadius: '16px', height: '100%', display: 'grid', gridTemplateColumns: '20% 80%'}}>
+                                    &lt;div>
+                                        &lt;Cuadrado>
+                                            &lt;FaSun style={{width: '65%', height: '65%', color: '#F8560E'}}/>
+                                        &lt;/Cuadrado>
+                                    &lt;/div>
+                                    &lt;div style={{margin: '5%'}}>
+                                        &lt;h3 className="tittle-block" >Controla el nivel de radiación UV y protégete.&lt;/h3>
+                                    &lt;/div>
+                                &lt;/div>
+                                &lt;div style={{  backgroundImage: 'linear-gradient(to bottom, #F8560E,#ff9f20)', borderRadius: '16px', margin: '20px 0px', height: '130px', alignContent:'center', paddingLeft: '20px'}}>
+        
+                                    &lt;div style={{width: '100%', color: 'white', fontSize: '130%', alignContent:'center'}}>
+                                        &lt;p style={{fontSize: '130%', fontWeight: '600'}}>&lt;span> Nivel de radiación UV: &lt;/span>&lt;strong style={{fontFamily: 'inherit', fontSize: '110%', margin: '2%'}}> ALTO&lt;/strong>&lt;/p>
+
+                                    &lt;/div>
+                                &lt;/div>
+                            &lt;/div>
+                        &lt;/div>
+                                
+                                
+                        &lt;div href="" className="blockCalen">
+                            &lt;div style={{display: 'flex', flexDirection: 'column'}}>
+
+                                &lt;div style={{borderRadius: '16px', height: '100%', display: 'grid', gridTemplateColumns: '20% 80%'}}>
+                                    &lt;div>
+                                        &lt;Cuadrado>
+                                            &lt;IoBody   style={{width: '70%', height: '70%', color: '#ff20ff'}}/>
+                                        &lt;/Cuadrado>
+                                    &lt;/div>
+                                    &lt;div style={{margin: '5%'}}>
+                                        &lt;h3 className="tittle-block" >LLeva un registro de las lesiones sobre tu cuerpo.&lt;/h3>
+                                    &lt;/div>
+                                &lt;/div>
+                                &lt;div style={{ margin: '20px 0', height: '130px', display: 'grid', gridTemplateColumns: '32% 32% 32%', gap: '2%'}}>
+            
+                                    &lt;div style={{width: '100%', backgroundImage: 'linear-gradient(to bottom, #a20ef8,#ff20ff)', borderRadius: '16px', alignContent:'center', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                        &lt;span style={{color: 'white', fontSize: '200%', fontWeight: '600'}}>
+                                            Cara
+                                        &lt;/span>
+                                    &lt;/div>
+
+                                    &lt;div style={{width: '100%', backgroundImage: 'linear-gradient(to bottom, #a20ef8,#ff20ff)', borderRadius: '16px', alignContent:'center', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                        &lt;span style={{color: 'white', fontSize: '200%', fontWeight: '600'}}>
+                                            Espalda
+                                        &lt;/span>
+                                    &lt;/div>
+
+                                    &lt;div style={{width: '100%', backgroundImage: 'linear-gradient(to bottom, #a20ef8,#ff20ff)', borderRadius: '16px', alignContent:'center', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                        &lt;span style={{color: 'white', fontSize: '200%', fontWeight: '600'}}>
+                                            Torso
+                                        &lt;/span>
+                                    &lt;/div>
+
+                                &lt;/div>
+                            &lt;/div>
+                        &lt;/div>
+                    &lt;/div>
+
+                &lt;/Block>
+                
+            &lt;/div>
+
+        ):(
+
+            &lt;div>
+                &lt;Block strong className='white-block'>
+
+                    &lt;div className="blog-title" >Utiliza nuestras herramientas para tu bienestar:&lt;/div>
+
+                    &lt;div className='pc-block'>       
+
+                        &lt;div className="blockCalen">
+                            &lt;div style={{borderRadius: '16px', height: '100%'}}>
+                                &lt;div>
+                                    &lt;Cuadrado>
+                                        &lt;svg style={{margin: 'auto'}} width="52" height="63" viewBox="0 0 42 43" fill="none">
+                                            &lt;path fillRule="evenodd"  d="M11.2972 0.266357C12.0265 0.266357 12.6178 0.857615 12.6178 1.58697V9.42809C12.6178 10.1574 12.0265 10.7487 11.2972 10.7487C10.5678 10.7487 9.97656 10.1574 9.97656 9.42809V1.58697C9.97656 0.857615 10.5678 0.266357 11.2972 0.266357Z" fill="#F8560E">&lt;/path>
+                                            &lt;path fillRule="evenodd"  d="M30.223 0.124512C30.9523 0.124512 31.5436 0.715769 31.5436 1.44512V9.28625C31.5436 10.0156 30.9523 10.6069 30.223 10.6069C29.4936 10.6069 28.9023 10.0156 28.9023 9.28625V1.44512C28.9023 0.715769 29.4936 0.124512 30.223 0.124512Z" fill="#F8560E">&lt;/path>
+                                            &lt;path fillRule="evenodd"  d="M8.00391 5.34912H5.26644C2.5434 5.34912 0.335938 7.55658 0.335938 10.2796V38.056C0.335938 40.7791 2.5434 42.9865 5.26644 42.9865H36.8066C39.5296 42.9865 41.7371 40.7791 41.7371 38.056V10.2796C41.7371 7.55658 39.5296 5.34912 36.8066 5.34912H33.4257V9.42732C33.4257 11.2507 31.9475 12.7288 30.1241 12.7288C28.3007 12.7288 26.8226 11.2507 26.8226 9.42732V5.34912H14.607V9.42732C14.607 11.2507 13.1288 12.7288 11.3054 12.7288C9.48205 12.7288 8.00391 11.2507 8.00391 9.42732V5.34912Z" fill="#F8560E">&lt;/path>
+                                            &lt;path d="M9.73343 29.8157C10.7728 29.8157 11.6153 28.9732 11.6153 27.9339C11.6153 26.8945 10.7728 26.052 9.73343 26.052C8.6941 26.052 7.85156 26.8945 7.85156 27.9339C7.85156 28.9732 8.6941 29.8157 9.73343 29.8157Z" fill="white">&lt;/path>
+                                            &lt;path d="M17.2569 29.8156C18.2962 29.8156 19.1387 28.9731 19.1387 27.9338C19.1387 26.8944 18.2962 26.0519 17.2569 26.0519C16.2175 26.0519 15.375 26.8944 15.375 27.9338C15.375 28.9731 16.2175 29.8156 17.2569 29.8156Z" fill="white">&lt;/path>
+                                            &lt;path d="M24.7725 29.8156C25.8118 29.8156 26.6544 28.9731 26.6544 27.9338C26.6544 26.8944 25.8118 26.0519 24.7725 26.0519C23.7332 26.0519 22.8906 26.8944 22.8906 27.9338C22.8906 28.9731 23.7332 29.8156 24.7725 29.8156Z" fill="white">&lt;/path>
+                                            &lt;path d="M32.3077 29.8156C33.347 29.8156 34.1895 28.9731 34.1895 27.9338C34.1895 26.8944 33.347 26.0519 32.3077 26.0519C31.2683 26.0519 30.4258 26.8944 30.4258 27.9338C30.4258 28.9731 31.2683 29.8156 32.3077 29.8156Z" fill="white">&lt;/path>
+                                            &lt;path d="M24.7725 22.2877C25.8118 22.2877 26.6544 21.4451 26.6544 20.4058C26.6544 19.3665 25.8118 18.5239 24.7725 18.5239C23.7332 18.5239 22.8906 19.3665 22.8906 20.4058C22.8906 21.4451 23.7332 22.2877 24.7725 22.2877Z" fill="white">&lt;/path>
+                                            &lt;path d="M32.3077 22.2877C33.347 22.2877 34.1895 21.4451 34.1895 20.4058C34.1895 19.3665 33.347 18.5239 32.3077 18.5239C31.2683 18.5239 30.4258 19.3665 30.4258 20.4058C30.4258 21.4451 31.2683 22.2877 32.3077 22.2877Z" fill="white">&lt;/path>
+                                            &lt;path d="M9.73343 37.3421C10.7728 37.3421 11.6153 36.4996 11.6153 35.4602C11.6153 34.4209 10.7728 33.5784 9.73343 33.5784C8.6941 33.5784 7.85156 34.4209 7.85156 35.4602C7.85156 36.4996 8.6941 37.3421 9.73343 37.3421Z" fill="white">&lt;/path>
+                                            &lt;path d="M17.2569 37.3421C18.2962 37.3421 19.1387 36.4996 19.1387 35.4602C19.1387 34.4209 18.2962 33.5784 17.2569 33.5784C16.2175 33.5784 15.375 34.4209 15.375 35.4602C15.375 36.4996 16.2175 37.3421 17.2569 37.3421Z" fill="white">&lt;/path>
+                                            &lt;path d="M24.7725 37.3421C25.8118 37.3421 26.6544 36.4996 26.6544 35.4602C26.6544 34.4209 25.8118 33.5784 24.7725 33.5784C23.7332 33.5784 22.8906 34.4209 22.8906 35.4602C22.8906 36.4996 23.7332 37.3421 24.7725 37.3421Z" fill="white">&lt;/path>
+                                        &lt;/svg> 
+                                    &lt;/Cuadrado>
+                                &lt;/div>
+                                &lt;div style={{margin: '5%'}}>
+                                    &lt;h3 className="tittle-block" >Programa controles y mantén la amenaza baja.&lt;/h3>
+                                    
+                                    &lt;div style={{backgroundImage: 'linear-gradient(to bottom, #0e8d43,#107060)', borderRadius: '16px', margin: '5% 0', height: '130px', display: 'grid', gridTemplateColumns: '20% 80%'}}>
+                                        &lt;div style={{width: '100%', height: '130px', alignContent: 'center'}}>
+                                            &lt;Rueda>     
+                                                &lt;CircularProgressbar value='33' text='33%' styles={{root: {},
+                                                                                                    path: {
+                                                                                                        
+                                                                                                        stroke: '#F77040',
+                                                                                                        strokeLinecap: 'round',
+
+                                                                                                        transition: 'stroke-dashoffset 0.5s ease 0s',
+                                                                                                        transformOrigin: 'center center',
+                                                                                                    },
+                                                                                                    trail: {
+                                                                                                        stroke: '#d6d6d6',
+                                                                                                        strokeLinecap: 'round',
+                                                                                                        
+                                                                                                        transformOrigin: 'center center',
+                                                                                                    },
+                                                                                                    text: {
+                                                                                                        
+                                                                                                        fill: 'white',
+                                                                                                        fontSize: '170%',
+                                                                                                        fontWeight: '600'
+                                                                                                    },
+                                                                                                    // Customize background - only used when the `background` prop is true
+                                                                                                    background: {
+                                                                                                        fill: 'black',
+                                                                                                    },
+                                                                                                    }}/>              
+                    
+                                            &lt;/Rueda> 
+                                        &lt;/div>
+                                        &lt;div style={{width: '100%', color: 'white', fontSize: '130%', alignContent:'center'}}>
+                                            &lt;p style={{fontSize: '130%'}}>&lt;span>  Nivel de amenaza:&lt;/span>&lt;strong> Bajo&lt;/strong>&lt;/p>
+
+                                        &lt;/div>
+                                    &lt;/div>
+                                    
+                                &lt;/div>
+                            &lt;/div>
+                        &lt;/div>
+                                
+                                
+                        &lt;div href="" className="blockCalen">
+                            &lt;div style={{borderRadius: '16px', height: '100%'}}>
+                                &lt;div>
+                                    &lt;Cuadrado>
+                                        &lt;FaSun style={{width: '65%', height: '65%', color: '#F8560E'}}/>
+                                    &lt;/Cuadrado>
+                                &lt;/div>
+                                &lt;div style={{margin: '5%'}}>
+                                    &lt;h3 className="tittle-block" >Controla el nivel de radiación UV y protégete.&lt;/h3>
+                                    &lt;div style={{  backgroundImage: 'linear-gradient(to bottom, #F8560E,#ff9f20)', borderRadius: '16px', margin: '5% 0', height: '130px', alignContent:'center', paddingLeft: '20px'}}>
+            
+                                        &lt;div style={{width: '100%', color: 'white', fontSize: '130%', alignContent:'center'}}>
+                                            &lt;p style={{fontSize: '130%', fontWeight: '600'}}>&lt;span> Nivel de radiación UV: &lt;/span>&lt;strong style={{fontFamily: 'inherit', fontSize: '110%', margin: '2%'}}> ALTO&lt;/strong>&lt;/p>
+
+                                        &lt;/div>
+                                    &lt;/div>
+                                &lt;/div>
+                            &lt;/div>
+                        &lt;/div>
+                                
+                                
+                        &lt;div href="" className="blockCalen">
+                            &lt;div style={{borderRadius: '16px', height: '100%'}}>
+                                &lt;div>
+                                    &lt;Cuadrado>
+                                        &lt;IoBody   style={{width: '70%', height: '70%', color: '#ff20ff'}}/>
+                                    &lt;/Cuadrado>
+                                &lt;/div>
+                                &lt;div style={{margin: '5%'}}>
+                                    &lt;h3 className="tittle-block" >LLeva un registro de las lesiones sobre tu cuerpo.&lt;/h3>
+                                    &lt;div style={{ margin: '5% 0', height: '130px', display: 'grid', gridTemplateColumns: '49% 49%', gap: '2%'}}>
+            
+                                        &lt;div style={{width: '100%', backgroundImage: 'linear-gradient(to bottom, #a20ef8,#ff20ff)', borderRadius: '16px', alignContent:'center', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                            &lt;span style={{color: 'white', fontSize: '200%', fontWeight: '600'}}>
+                                                Cara
+                                            &lt;/span>
+                                        &lt;/div>
+
+                                        &lt;div style={{width: '100%', backgroundImage: 'linear-gradient(to bottom, #a20ef8,#ff20ff)', borderRadius: '16px', alignContent:'center', display: 'flex', justifyContent: 'center', alignItems: 'center'}}>
+                                            &lt;span style={{color: 'white', fontSize: '200%', fontWeight: '600'}}>
+                                                Espalda
+                                            &lt;/span>
+                                        &lt;/div>
+
+                                    &lt;/div>
+                                &lt;/div>
+                            &lt;/div>
+                        &lt;/div>
+                    &lt;/div>
+
+                &lt;/Block>
+
+            &lt;/div>
+
+        )}
+
+
+        {isMobile ? (
+
+            &lt;div>
+                &lt;Block strong className='white-block'>
+
+                    &lt;div className="blog-title" >A quién prestamos nuestros servicios:&lt;/div>
+                    &lt;br/>
+
+                    &lt;div>  
+                        { isMobile2 ?(
+                            &lt;div href="" className="blockHouse">
+                                    &lt;div style={{marginBottom: '10px'}}>
+                                        &lt;Cuadrado>
+                                            &lt;FaHouseChimneyMedical style={{width: '70%', height: '70%', color: '#F8560E'}}/>
+                                        &lt;/Cuadrado>
+                                    &lt;/div>
+                                    &lt;div>
+                                        &lt;h3 className="tittle-block" >Diseñado para uso doméstico&lt;/h3>
+                                        &lt;div className="text-block">
+                                            &lt;p>Deja que VideSkin forme parte de tu dia a día y mantén una piel sana gracias al seguimiento de la aplicación y los análisis periódicos.&lt;/p>
+                                        &lt;/div>
+                                    &lt;/div>
+                            &lt;/div>
+                        ):(
+                            &lt;div href="" className="blockHouse">
+                                &lt;div style={{borderRadius: '16px', height: '100%', display: 'grid', gridTemplateColumns: '20% 80%'}}>
+                                    &lt;div>
+                                        &lt;Cuadrado>
+                                            &lt;FaHouseChimneyMedical style={{width: '70%', height: '70%', color: '#F8560E'}}/>
+                                        &lt;/Cuadrado>
+                                    &lt;/div>
+                                    &lt;div>
+                                        &lt;h3 className="tittle-block" >Diseñado para uso doméstico&lt;/h3>
+                                        &lt;div className="text-block">
+                                            &lt;p>Deja que VideSkin forme parte de tu dia a día y mantén una piel sana gracias al seguimiento de la aplicación y los análisis periódicos.&lt;/p>
+                                        &lt;/div>
+                                    &lt;/div>
+                                &lt;/div>
+                            &lt;/div>
+                        )}    
+
+                        { isMobile2 ?(
+                            &lt;div href="" className="blockPro">
+                                &lt;div style={{marginBottom: '10px'}}>
+                                    &lt;Cuadrado>
+                                        &lt;FaUserDoctor  style={{width: '70%', height: '70%', color: '#107060'}}/>
+                                    &lt;/Cuadrado>
+                                &lt;/div>
+                                &lt;div>
+                                    &lt;h3 className="tittle-block" >Diseñado para profesionales&lt;/h3>
+                                    &lt;div className="text-block">
+                                        &lt;p>Consigue una herramienta de analisis para tu dia a dia en el trabajo, usala para realizar cribados o de apoyo y aumenta tu eficiencia.&lt;/p>
+                                    &lt;/div>
+                                &lt;/div>
+                            &lt;/div>
+                        ):(
+                            &lt;div href="" className="blockPro">
+                                &lt;div style={{borderRadius: '16px', height: '100%', display: 'grid', gridTemplateColumns: '20% 80%'}}>
+                                    &lt;div>
+                                        &lt;Cuadrado>
+                                            &lt;FaUserDoctor  style={{width: '70%', height: '70%', color: '#107060'}}/>
+                                        &lt;/Cuadrado>
+                                    &lt;/div>
+                                    &lt;div>
+                                        &lt;h3 className="tittle-block" >Diseñado para profesionales&lt;/h3>
+                                        &lt;div className="text-block">
+                                            &lt;p>Consigue una herramienta de analisis para tu dia a dia en el trabajo, usala para realizar cribados o de apoyo y aumenta tu eficiencia.&lt;/p>
+                                        &lt;/div>
+                                    &lt;/div>
+                                &lt;/div>
+                            &lt;/div>
+                        )}      
+
+                        { isMobile2 ?(
+                            &lt;div href="" className="blockUni">
+                                    &lt;div style={{marginBottom: '10px'}}>
+                                        &lt;Cuadrado>
+                                            &lt;IoMdSchool  style={{width: '70%', height: '70%', color: '#ff20ff'}}/>
+                                        &lt;/Cuadrado>
+                                    &lt;/div>
+                                    &lt;div>
+                                        &lt;h3 className="tittle-block" >Uso académico&lt;/h3>
+                                        &lt;div className="text-block">
+                                            &lt;p>La aplicación esta diseñada para el apoyo y aprendizaje en la detección de cáncer dermatológico.&lt;/p>
+                                        &lt;/div>
+                                    &lt;/div>
+                            &lt;/div>
+                        ):(
+                            &lt;div href="" className="blockUni">
+                                &lt;div style={{borderRadius: '16px', height: '100%', display: 'grid', gridTemplateColumns: '20% 80%'}}>
+                                    &lt;div>
+                                        &lt;Cuadrado>
+                                            &lt;IoMdSchool  style={{width: '70%', height: '70%', color: '#ff20ff'}}/>
+                                        &lt;/Cuadrado>
+                                    &lt;/div>
+                                    &lt;div>
+                                        &lt;h3 className="tittle-block" >Uso académico&lt;/h3>
+                                        &lt;div className="text-block">
+                                            &lt;p>La aplicación esta diseñada para el apoyo y aprendizaje en la detección de cáncer dermatológico.&lt;/p>
+                                        &lt;/div>
+                                    &lt;/div>
+                                &lt;/div>
+                            &lt;/div>
+                        )}      
+
+
+                                
+                                
+
+                                
+                                
+
+                    &lt;/div>
+
+                &lt;/Block>
+                
+            &lt;/div>
+
+        ):(
+
+            &lt;div>
+            &lt;Block strong className='white-block'>
+
+                &lt;div className="blog-title" >A quién prestamos nuestros servicios:&lt;/div>
+                &lt;br/>
+                &lt;div className='pc-block'>       
+                    &lt;div href="" className="blockHouse">
+                        &lt;div style={{borderRadius: '16px', height: '100%'}}>
+                            &lt;div>
+                                &lt;Cuadrado>
+                                    &lt;FaHouseChimneyMedical style={{width: '70%', height: '70%', color: '#F8560E'}}/>
+                                &lt;/Cuadrado>
+                            &lt;/div>
+                            &lt;div style={{margin: '5%'}}>
+                                &lt;h3 className="tittle-block" >Diseñado para uso doméstico&lt;/h3>
+                                &lt;div className="text-block">
+                                    &lt;p>Deja que VideSkin forme parte de tu dia a día y mantén una piel sana gracias al seguimiento de la aplicación y los análisis periódicos.&lt;/p>
+                                &lt;/div>
+                            &lt;/div>
+                        &lt;/div>
+                    &lt;/div>
+                            
+                            
+                    &lt;div href="" className="blockPro">
+                        &lt;div style={{borderRadius: '16px', height: '100%'}}>
+                            &lt;div>
+                                &lt;Cuadrado>
+                                    &lt;FaUserDoctor  style={{width: '70%', height: '70%', color: '#107060'}}/>
+                                &lt;/Cuadrado>
+                            &lt;/div>
+                            &lt;div style={{margin: '5%'}}>
+                                &lt;h3 className="tittle-block" >Diseñado para profesionales&lt;/h3>
+                                &lt;div className="text-block">
+                                    &lt;p>Consigue una herramienta de analisis para tu dia a dia en el trabajo, usala para realizar cribados o de apoyo y aumenta tu eficiencia.&lt;/p>
+                                &lt;/div>
+                            &lt;/div>
+                        &lt;/div>
+                    &lt;/div>
+                            
+                            
+                    &lt;div href="" className="blockUni">
+                        &lt;div style={{borderRadius: '16px', height: '100%'}}>
+                            &lt;div>
+                                &lt;Cuadrado>
+                                    &lt;IoMdSchool  style={{width: '70%', height: '70%', color: '#ff20ff'}}/>
+                                &lt;/Cuadrado>
+                            &lt;/div>
+                            &lt;div style={{margin: '5%'}}>
+                                &lt;h3 className="tittle-block" >Uso académico&lt;/h3>
+                                &lt;div className="text-block">
+                                    &lt;p>La aplicación esta diseñada para el apoyo y aprendizaje en la detección de cáncer dermatológico.&lt;/p>
+                                &lt;/div>
+                            &lt;/div>
+                        &lt;/div>
+                    &lt;/div>
+                &lt;/div>
+
+            &lt;/Block>
+            
+        &lt;/div>
+
+        )}
+
+        &lt;br/>
+
+        &lt;div className="bottom-block">
+
+        &lt;/div>
+
+        &lt;RegisterPage showPopup={showPopupReg} closePopup={closePopupReg} id="reg-popup"/>
+
+        &lt;Popup opened={showContactUs} onClose={closeContactUs}>
+          &lt;div className='page'>
+            &lt;div className="navbar" style={{display: 'grid', gridTemplateColumns: '15% 1fr', background: 'teal', color: '#ffffff', textAlign: 'center', alignItems: 'center',  fontSize: '170%', lineHeight: '250%'}}>
+              &lt;Button onClick={closeContactUs} >&lt;MdArrowBack style={{ fontSize: '24px', color: 'white'}}/>&lt;/Button>
+              &lt;span style={{ marginLeft: '0%', marginRight: '15%', textAlign: 'center'}}>Contáctanos&lt;/span>
+            &lt;/div>
+
+            &lt;div className='page-content' style={{padding: '5%'}}>
+                &lt;div className="cardS" style={{marginTop: '100px'}}>
+                    
+                    &lt;div className="card-bodyS">
+                        &lt;div className="cardS-orange" >
+                            &lt;h6 className="header-orange">Introduce tus datos.&lt;/h6>
+                            &lt;p className="body-orange">Introduce tus datos y mandanos un mensaje, te responderemos lo más pronto posible.&lt;/p>
+                        &lt;/div>
+                        
+                    &lt;div className="rowS">
+
+
+                        &lt;div className="bloqueInput">
+                        &lt;label htmlFor="email" className="form-label">E-mail&lt;/label>
+                        &lt;textarea
+                            className="form-control"
+                            id="email"
+                            name="email"
+                            value={data.email}
+                            onChange={handleInputChange}
+                            placeholder="Tu email..."
+                        >&lt;/textarea>
+                        &lt;/div>
+
+                        &lt;div className="bloqueInput">
+                        &lt;label htmlFor="username" className="form-label">Nombre&lt;/label>
+                        &lt;textarea
+                            className="form-control"
+                            id="user"
+                            name="user"
+                            value={data.user}
+                            onChange={handleInputChange}
+                            placeholder="Tu nombre..."
+                        >&lt;/textarea>
+                        &lt;/div>
+
+                        &lt;div className="bloqueInput" style={{ gridColumn: 'span 2' }}>
+                        &lt;label htmlFor="message" className="form-label">Mensaje&lt;/label>
+                        &lt;textarea
+                            className="form-control"
+                            id="message"
+                            name="mensaje"
+                            value={data.mensaje}
+                            onChange={handleInputChange}
+                            rows="4"
+                            placeholder="Escribe tu mensaje aquí..."
+                        >&lt;/textarea>
+                        &lt;/div>
+                    &lt;/div>
+
+                    &lt;div>
+                        &lt;button onClick={handleEnviar} className="butonS" style={{ marginBottom: '0' }}>
+                        Enviar
+                        &lt;/button>
+                    &lt;/div>
+                    &lt;/div>
+                &lt;/div> 
+            &lt;/div>
+          &lt;/div>
+        &lt;/Popup>
+        
+    &lt;/div>
+    &lt;/div>
+  );
+}
+export default LandingPage;
+
+const Rueda = styled.div`
+  width: 70%;
+  max-width: 100px;
+  margin: auto auto;
+`;
+
+const Cuadrado = styled.div`
+width: 70%;
+max-width: 100px;
+min-width: 75px;
+background-color: white;
+border-radius: 16px;
+display: flex;
+justify-content: center; /* Centra horizontalmente */
+align-items: center; /* Centra verticalmente */
+position: relative; 
+&amp;:after {
+  content: '';
+  display: block;
+  padding-top: 100%; 
+}
+&amp;:content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+`;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Calendario.html">Calendario</a></li><li><a href="module-ChangePasswd.html">ChangePasswd</a></li><li><a href="module-CodeValidationPopup.html">CodeValidationPopup</a></li><li><a href="module-Contacto.html">Contacto</a></li><li><a href="module-Cribado.html">Cribado</a></li><li><a href="module-Estadisticas.html">Estadisticas</a></li><li><a href="module-FilePicker.html">FilePicker</a></li><li><a href="module-Galeria.html">Galeria</a></li><li><a href="module-HomePage.html">HomePage</a></li><li><a href="module-Landing.html">Landing</a></li><li><a href="module-Login.html">Login</a></li><li><a href="module-MainApp.html">MainApp</a></li><li><a href="module-PerfilPage.html">PerfilPage</a></li><li><a href="module-PopUpAmpliar.html">PopUpAmpliar</a></li><li><a href="module-PopUpAmpliarGaleria.html">PopUpAmpliarGaleria</a></li><li><a href="module-PopUpBody.html">PopUpBody</a></li><li><a href="module-PopUpCropper.html">PopUpCropper</a></li><li><a href="module-PopUpRegistrarse.html">PopUpRegistrarse</a></li><li><a href="module-PopUpResultados.html">PopUpResultados</a></li><li><a href="module-URLPicker.html">URLPicker</a></li></ul><h3>Global</h3><ul><li><a href="global.html#BuscadorPacientesPopUp">BuscadorPacientesPopUp</a></li><li><a href="global.html#InstruccionesPopup">InstruccionesPopup</a></li><li><a href="global.html#MyApp">MyApp</a></li><li><a href="global.html#NotFoundPage">NotFoundPage</a></li><li><a href="global.html#Tipos">Tipos</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Aug 07 2024 11:22:41 GMT+0200 (hora de verano de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

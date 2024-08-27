@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/mainApp.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/mainApp.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect, useRef, useContext } from 'react';
+
+import logo from "../images/logo2.png";
+import { v } from "../styles/Variables";
+import {
+  AiOutlineHome,
+  AiOutlineSetting
+} from "react-icons/ai";
+import { MdOutlineAnalytics, MdLogout } from "react-icons/md";
+import { IoMdPhotos } from "react-icons/io";
+import { MdHealthAndSafety } from "react-icons/md";
+import { LuCalendarDays } from "react-icons/lu";
+import { GiHealthNormal } from "react-icons/gi";
+
+
+import styled from "styled-components";
+
+import axios from 'axios';
+import { userConfig } from '../js/config';
+
+
+import {
+  f7,
+  Page,
+  View,
+  Link,
+} from 'framework7-react';
+
+/**
+* @module MainApp
+*/
+
+/**
+ * MainApp Page
+ *
+ * Pagina principal para aplicación en modo escritorio.
+ *
+ * @returns {JSX.Element} 
+ */
+
+const MainApp = () => {
+
+  //#region ROL
+  /**
+  * Token de autenticación.
+  * @const {string} token 
+  */
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+
+  /**
+  * Configuración para las solicitudes HTTP que requieren autenticación.
+  * @const {object} config
+  * @property {object} headers - Cabeceras de la solicitud HTTP.
+  * @property {string} headers.Authorization - Cabecera de autorización con el token.
+  */  
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+  /**
+  * Token de autenticación.
+  * @const {Integer} role
+  */
+  const[role, setRole] = useState(1)
+
+
+  /**
+  * Efecto que verifica si el cliente esta autenticado y el rol que tiene.
+  * Carga toda la información dinamica de la pantalla.
+  *
+  * @method
+  * @memberof module:MainApp
+  * @name useEffect
+  */
+  useEffect(() => {
+    //console.log(f7.views[0].params.role)
+    async function checkAuthentication() {  
+
+
+      try {
+        const response = await axios.get(`http://${userConfig.serverIP}:${userConfig.serverPort}/jwt`, config);
+        console.log(response.data.logged_in_as)
+        console.log(response.data.role)
+        setRole(response.data.role)
+
+      } catch (error) {
+        console.error('Error al verificar la autenticación:', error);
+        // Manejar el error aquí si es necesario
+      }
+    }
+
+    checkAuthentication();
+  }, []);
+
+
+  //#endregion
+
+  //#region ESTADO MENU
+
+  /**
+  * Estado que indica si el menú lateral está abierto o cerrado.
+  *
+  * @const {boolean} sidebarOpen
+  */
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  /**
+  * Función para alternar el estado del menú lateral.
+  */
+  const ModSidebaropen = () => {
+    setSidebarOpen(!sidebarOpen);
+  };
+
+  //#endregion
+
+
+  //#region control cambio vista
+
+  /**
+  * Estado para controlar la vista actual de la aplicación.
+  * @const {string} currentView 
+  */
+  const [currentView, setCurrentView] = useState('/home/');
+  /**
+  * Estado para controlar la transición a diferentes vistas de páginas.
+  * @const {boolean} canChangeView 
+  */
+  const [canChangeView, setCanChangeView] = useState(true); //CONTROLA LA TRANSICION A VIEW DE LAS PAGINAS
+
+  /**
+  * Efecto para habilitar cambio de vista con EVENTO PAGEAFTERIN.
+  *
+  * @method
+  * @returns {boolean} 
+  * @memberof module:MainApp
+  * @name useEffect
+  */
+  useEffect(() => {
+    
+    f7.on('pageAfterIn', (pageData) => {
+      setCanChangeView(true); 
+    });
+
+    //RETIRAR EVENTO AL DESMONTAR COMPONENTE
+    return () => {
+      f7.off('pageAfterIn');
+    };
+
+    
+  }, []);
+
+  //#endregion
+
+  
+  //#region MENU
+  
+  /**
+  * Efecto para navegar a la nueva vista cuando esta se modifique
+  *
+  * @method
+  * @param {String} currentView
+  * @memberof module:MainApp
+  * @name useEffect
+  */
+  useEffect(() => {
+    f7.views.main.router.navigate(currentView);
+    console.log(role)
+    //setSidebarOpen(false)
+  }, [currentView]);
+  
+
+  /**
+  * Maneja el clic en el botón "Home".
+  */
+  const handleHome = () => {
+    if (canChangeView) {
+      setCurrentView('/home/')    //CAMBIAMOS VISTA
+      setCanChangeView(false);    //DESHABILITAMOS CAMBIO DE VISTA
+    }
+  };
+
+  /**
+  * Maneja el clic en el botón "Analizar".
+  */
+  const handleAnalizar = () => {
+    if (canChangeView) {
+      setCurrentView('/analizar/') //CAMBIAMOS VISTA
+      setCanChangeView(false);    //DESHABILITAMOS CAMBIO DE VISTA
+    }
+  };
+
+  /**
+  * Maneja el clic en el botón "Galeria".
+  */
+  const handleGaleria = () => {
+    if (canChangeView) {
+        setCurrentView('/galeria/') //CAMBIAMOS VISTA
+        setCanChangeView(false);    //DESHABILITAMOS CAMBIO DE VISTA
+    }
+  };
+
+  /**
+  * Maneja el clic en el botón "Calendario".
+  */  
+  const handleCalendario = () => {
+    if (canChangeView) {
+      setCurrentView('/calendario/')   //CAMBIAMOS VISTA
+      setCanChangeView(false);    //DESHABILITAMOS CAMBIO DE VISTA
+    }
+  };
+
+  /**
+  * Maneja el clic en el botón "Estadísticas".
+  */
+  const handleStats = () => {
+    if (canChangeView) {
+        setCurrentView('/stats/') //CAMBIAMOS VISTA
+        setCanChangeView(false);    //DESHABILITAMOS CAMBIO DE VISTA
+    }
+  };
+
+  /**
+  * Maneja el clic en el botón "Panel Médico".
+  */
+  const handleStatsPro = () => {
+    if (canChangeView) {
+        setCurrentView('/statsPro/') //CAMBIAMOS VISTA
+        setCanChangeView(false);    //DESHABILITAMOS CAMBIO DE VISTA
+    }
+  };
+
+
+
+  /**
+  * Maneja el clic en el botón "Configuración".
+  */
+  const handleSettings = () => {
+    if (canChangeView) {
+      setCurrentView('/settings/') //CAMBIAMOS VISTA
+      setCanChangeView(false);     //DESHABILITAMOS CAMBIO DE VISTA
+    }
+  };
+
+  /**
+  * Muestra un diálogo de confirmación para cerrar sesión y realiza la acción correspondiente.
+  * @method 
+  * @memberof module:MainApp
+  * @name LogOutDialog
+  */
+  const LogOutDialog = () => {
+    f7.dialog.confirm('¿Estas seguro de que deseas salir?', () => {
+      localStorage.removeItem('token');
+      sessionStorage.removeItem('token')
+      f7.dialog.progress('Saliendo...');
+      setTimeout(() => {
+        f7.dialog.close();
+      }, 3000)
+      window.location.reload();
+    });
+  };
+
+
+  //#endregion
+  
+
+
+  return(
+ 
+  &lt;Page name="mainApp">
+
+    &lt;Container className={sidebarOpen ? "sidebarState active" : "safe-areas"}>
+      
+      &lt;Menu isOpen={sidebarOpen}>
+
+        &lt;div className="Logocontent" onClick={ModSidebaropen}>
+          &lt;div className="imgcontent">
+            &lt;img src={logo} width={45} />
+          &lt;/div>
+          &lt;h2>VideSkin&lt;/h2>
+        &lt;/div>
+
+        {/* BOTON HOME */}
+        &lt;div className="LinkContainer">
+          &lt;Link onClick={handleHome} className={currentView === "/home/" ? "Links active" : "Links"} >   {/* Clase Links -> negro, clase Lincks active -> morado */}
+            &lt;div className="Linkicon">&lt;AiOutlineHome />&lt;/div>
+            {sidebarOpen &amp;&amp; &lt;span>Home&lt;/span>}
+          &lt;/Link>
+        &lt;/div>
+
+        {/* BOTON CRIBADO */}
+        &lt;div className="LinkContainer">
+          &lt;Link onClick={handleAnalizar} className={currentView === "/analizar/" ? "Links active" : "Links"} >   {/* Clase Links -> negro, clase Lincks active -> morado */}
+            &lt;div className="Linkicon">&lt;MdHealthAndSafety  />&lt;/div>
+            {sidebarOpen &amp;&amp; &lt;span>Analizar&lt;/span>}
+          &lt;/Link>
+        &lt;/div>
+
+        
+        {/* BOTON GALERIA */}
+        &lt;div className="LinkContainer">
+          &lt;Link onClick={handleGaleria} className={currentView === "/galeria/" ? "Links active" : "Links"}>     {/* Clase Links -> negro, clase Lincks active -> morado */}
+            &lt;div className="Linkicon">&lt;IoMdPhotos />&lt;/div>
+            {sidebarOpen &amp;&amp; &lt;span>Galeria&lt;/span>}
+          &lt;/Link>
+        &lt;/div>
+
+
+        {/* BOTON CALENDARIO */}
+        &lt;div className="LinkContainer">
+          &lt;Link onClick={handleCalendario} className={currentView === "/calendario/" ? "Links active" : "Links"}>   {/* Clase Links -> negro, clase Lincks active -> morado */}
+            &lt;div className="Linkicon">&lt;LuCalendarDays  />&lt;/div>
+            {sidebarOpen &amp;&amp; &lt;span>Calendario&lt;/span>}
+          &lt;/Link>
+        &lt;/div>
+
+
+        {/* BOTON ESTADISTICAS */}
+        &lt;div className="LinkContainer">
+          &lt;Link onClick={handleStats} className={currentView === "/stats/" ? "Links active" : "Links"}>   {/* Clase Links -> negro, clase Lincks active -> morado */}
+            &lt;div className="Linkicon">&lt;MdOutlineAnalytics />&lt;/div>
+            {sidebarOpen &amp;&amp; &lt;span>Estadisticas&lt;/span>}
+          &lt;/Link>
+        &lt;/div>
+
+
+        {/* BOTON PANEL MEDICO */}
+        {role === 3 &amp;&amp; (
+          &lt;div className="LinkContainer">
+            &lt;Link onClick={handleStatsPro} className={currentView === "/statsPro/" ? "Links active" : "Links"}>   {/* Clase Links -> negro, clase Lincks active -> morado */}
+              &lt;div className="Linkicon">&lt;GiHealthNormal  />&lt;/div>
+              {sidebarOpen &amp;&amp; &lt;span>Panel Médico&lt;/span>}
+            &lt;/Link>
+          &lt;/div>
+        )}
+
+        &lt;Divider/>
+
+        {/* BOTON SETTINGS */}
+        &lt;div className="LinkContainer">
+          &lt;Link onClick={handleSettings} className={currentView === "/settings/" ? "Links active" : "Links"}>   {/* Clase Links -> negro, clase Lincks active -> morado */}
+            &lt;div className="Linkicon">&lt;AiOutlineSetting />&lt;/div>
+            {sidebarOpen &amp;&amp; &lt;span>Configuración&lt;/span>}
+          &lt;/Link>
+        &lt;/div>
+
+        {/* BOTON SALIR */}
+        &lt;div className="LinkContainer">
+          &lt;Link onClick={LogOutDialog} className={currentView === "/logOut/" ? "Links active" : "Links"}>   {/* Clase Links -> negro, clase Lincks active -> morado */}
+            &lt;div className="Linkicon">&lt;MdLogout />&lt;/div>
+            {sidebarOpen &amp;&amp; &lt;span>Cerrar Sesión&lt;/span>}
+          &lt;/Link>
+        &lt;/div>
+
+        &lt;Divider/>
+
+
+      &lt;/Menu>
+
+      &lt;View main url='/home/'/>
+
+    &lt;/Container>
+        
+  &lt;/Page>
+);
+
+}
+
+//#region STYLED COMPONENTS
+
+const Container = styled.div`
+  display: grid;
+  grid-template-columns: 90px auto;
+  background: ${({ theme }) => theme.bgtotal};
+  transition:all 0.3s ;
+  height:100vh;
+  &amp;.active {
+    grid-template-columns: 300px auto;
+  }
+  color:${({theme})=>theme.text};
+`;
+
+const Menu = styled.div`
+  color: ${(props) => props.theme.text};
+  background: ${(props) => props.theme.bg};
+  position: sticky;
+  padding-top: 20px;
+  .Sidebarbutton {
+    position: absolute;
+    top: ${v.xxlSpacing};
+    right: -18px;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: ${(props) => props.theme.bgtgderecha};
+    box-shadow: 0 0 4px ${(props) => props.theme.bg3},
+      0 0 7px ${(props) => props.theme.bg};
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    transform: ${({ isOpen }) => (isOpen ? `initial` : `rotate(180deg)`)};
+    border: none;
+    letter-spacing: inherit;
+    color: inherit;
+    font-size: inherit;
+    text-align: inherit;
+    padding: 0;
+    font-family: inherit;
+    outline: none;
+  }
+  .Logocontent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    padding-bottom: ${v.lgSpacing};
+    .imgcontent {
+      display: flex;
+      img {
+        max-width: 100%;
+        height: auto;
+      }
+      cursor: pointer;
+      transition: all 0.3s;
+      transform: ${({ isOpen }) => (isOpen ? `scale(0.7)` : `scale(1.5)`)};
+    }
+    h2 {
+      display: ${({ isOpen }) => (isOpen ? `block` : `none`)};
+    }
+  }
+  .LinkContainer {
+    margin: 8px 0;
+   
+    padding: 0 15%;
+    :hover {
+      background: "${(props) => props.theme.bg3}";
+    }
+    .Links {
+      display: flex;
+      align-items: left;
+      justify-content: flex-start;
+      text-decoration: none;
+      padding: calc(${v.smSpacing}-2px) 0;
+      color: ${(props) => props.theme.text};
+      height:50px;
+      outline: none;
+      .Linkicon {
+        padding: ${v.smSpacing} ${v.mdSpacing};
+        display: flex;
+
+        svg {
+          font-size: 25px;
+        }
+      }
+      &amp;.active {
+        .Linkicon {
+          svg {
+            color: teal;
+          }
+        }
+      }
+    }
+    .Links:focus,
+    .Links:active {
+      outline: none;
+    }
+  }
+  .Themecontent {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .titletheme {
+      display: block;
+      padding: 10px;
+      font-weight: 700;
+      opacity: ${({ isOpen }) => (isOpen ? `1` : `0`)};
+      transition: all 0.3s;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+    .Togglecontent {
+      margin: ${({ isOpen }) => (isOpen ? `auto 40px` : `auto 15px`)};
+      width: 36px;
+      height: 20px;
+      border-radius: 10px;
+      transition: all 0.3s;
+      position: relative;
+      .theme-container {
+        background-blend-mode: multiply, multiply;
+        transition: 0.4s;
+        .grid {
+          display: grid;
+          justify-items: center;
+          align-content: center;
+          height: 100vh;
+          width: 100vw;
+          font-family: "Lato", sans-serif;
+        }
+        .demo {
+          font-size: 32px;
+          .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+            .theme-swither {
+              opacity: 0;
+              width: 0;
+              height: 0;
+              &amp;:checked + .slider:before {
+                left: 4px;
+                content: "🌑";
+                transform: translateX(26px);
+              }
+            }
+            .slider {
+              position: absolute;
+              cursor: pointer;
+              top: 0;
+              left: 0;
+              right: 0;
+              bottom: 0;
+              background: ${({ themeUse }) =>
+                themeUse === "light" ? v.lightcheckbox : v.checkbox};
+
+              transition: 0.4s;
+              &amp;::before {
+                position: absolute;
+                content: "☀️";
+                height: 0px;
+                width: 0px;
+                left: -10px;
+                top: 16px;
+                line-height: 0px;
+                transition: 0.4s;
+              }
+              &amp;.round {
+                border-radius: 34px;
+
+                &amp;::before {
+                  border-radius: 50%;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+`;
+
+const Divider = styled.div`
+  height: 1px;
+  width: 100%;
+  background: ${(props) => props.theme.bg3};
+  margin: ${v.lgSpacing} 0;
+`;
+
+//#endregion
+
+export default MainApp;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Calendario.html">Calendario</a></li><li><a href="module-ChangePasswd.html">ChangePasswd</a></li><li><a href="module-CodeValidationPopup.html">CodeValidationPopup</a></li><li><a href="module-Contacto.html">Contacto</a></li><li><a href="module-Cribado.html">Cribado</a></li><li><a href="module-Estadisticas.html">Estadisticas</a></li><li><a href="module-FilePicker.html">FilePicker</a></li><li><a href="module-Galeria.html">Galeria</a></li><li><a href="module-HomePage.html">HomePage</a></li><li><a href="module-Landing.html">Landing</a></li><li><a href="module-Login.html">Login</a></li><li><a href="module-MainApp.html">MainApp</a></li><li><a href="module-PerfilPage.html">PerfilPage</a></li><li><a href="module-PopUpAmpliar.html">PopUpAmpliar</a></li><li><a href="module-PopUpAmpliarGaleria.html">PopUpAmpliarGaleria</a></li><li><a href="module-PopUpBody.html">PopUpBody</a></li><li><a href="module-PopUpCropper.html">PopUpCropper</a></li><li><a href="module-PopUpRegistrarse.html">PopUpRegistrarse</a></li><li><a href="module-PopUpResultados.html">PopUpResultados</a></li><li><a href="module-URLPicker.html">URLPicker</a></li></ul><h3>Global</h3><ul><li><a href="global.html#BuscadorPacientesPopUp">BuscadorPacientesPopUp</a></li><li><a href="global.html#InstruccionesPopup">InstruccionesPopup</a></li><li><a href="global.html#MyApp">MyApp</a></li><li><a href="global.html#NotFoundPage">NotFoundPage</a></li><li><a href="global.html#Tipos">Tipos</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Aug 07 2024 11:22:41 GMT+0200 (hora de verano de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

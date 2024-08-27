@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/popup-recortar.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/popup-recortar.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { useState } from 'react'
+import { Button, Popup } from 'framework7-react';
+import Cropper from 'react-easy-crop'
+
+import { MdArrowBack } from 'react-icons/md';
+
+
+/**
+* @module PopUpCropper
+*/
+
+/**
+* PopUp para recortar imagenes
+* Este componente representa el PopUp para recortar y centrar una lesión antes de ser analizada.
+* @component
+* @param {boolean} props.showPopup - Indica si el PopUp está visible.
+* @param {function} props.closePopup - Función para cerrar el PopUp.
+* @param {String} props.imagen - Variable que indica la imagen actual.
+* @param {function} props.setImagen - Función para setear la imagen actual.
+* @param {function} props.setRecortado - Función para setear variable que indica si la imagen ya ha sido recortada.
+* @returns {JSX.Element} 
+*/
+
+const PopUpCropper = ({showPopup, closePopup, imagen, setImagen, setRecortado}) => {
+  /**
+  * Coordenadas donde esta el cuadrado de recorte.
+  * @const {Object} crop 
+  */
+  const [crop, setCrop] = useState({ x: 0, y: 0 })
+  /**
+  * Zoom de la imagen.
+  * @const {Integer} zoom 
+  */
+  const [zoom, setZoom] = useState(1)
+  /**
+  * Area recortada de la imagen.
+  * @const {Object} areaRecorte 
+  */
+  const [areaRecorte, setAreaRecorte] = useState(null)
+  const canvas = document.createElement('canvas');
+
+  /**
+  * Manejadora para setear el area recortada cuando se realice un recorte.
+  *
+  * @method
+  * @param {Object} croppedAreaPixels
+  * @returns {Object}
+  * @memberof module:PopUpCropper
+  * @name onCropComplete
+  */
+  const onCropComplete = (croppedArea, croppedAreaPixels) => {
+    setAreaRecorte(croppedAreaPixels)
+  }
+
+  /**
+  * Funcion para recortar la imagen con la variable areaRecorte.
+  *
+  * @method
+  * @param {String} originalImage
+  * @returns {String}
+  * @memberof module:PopUpCropper
+  */
+  function procesarImagen(originalImage) {
+   
+    //CREAR CANVAS
+    canvas.width = areaRecorte.width;
+    canvas.height = areaRecorte.height;
+    const context = canvas.getContext("2d");
+
+    //DIBUJAR LAS COORDENADAS CROP EN CANVAS
+    context.drawImage(
+        originalImage,
+        areaRecorte.x,
+        areaRecorte.y,
+        areaRecorte.width,
+        areaRecorte.height,
+        0,
+        0,
+        areaRecorte.width,
+        areaRecorte.height
+    );
+
+    //TRANSFORMAR CANVAS A IMAGEN BASE64
+    const newImage = canvas.toDataURL("image/png");
+    setImagen(newImage)
+    
+  }
+
+  /**
+  * Manejadora para recortar la imagen.
+  *
+  * @method
+  * @memberof module:PopUpCropper
+  * @name handleCentrar
+  */
+  const handleCentrar = () => {
+
+    //CREAR OBJETO IMAGEN CON DATA BASE 64
+    const originalImage = new Image();
+    originalImage.src = imagen;
+
+    procesarImagen(originalImage);
+    setRecortado(true)
+    closePopup()
+  }   
+
+
+  const handleGoBack = () => {
+    closePopup()
+  }
+
+  return (
+    &lt;Popup opened={showPopup} onClose={closePopup}>
+        &lt;div className="navbar" style={{display: 'grid', gridTemplateColumns: '5% 1fr 20%', background: 'teal', color: '#ffffff', textAlign: 'center', alignItems: 'center'}}>
+          &lt;MdArrowBack style={{fontSize: '24px', marginLeft: '90%', cursor: 'pointer'}} onClick={handleGoBack} />
+          &lt;span style={{marginLeft: '15%', marginRight: '0', textAlign: 'center'}}>Centrar Imagen&lt;/span>
+          &lt;Button tonal onClick={handleCentrar} style={{ marginRight: '10%',}}>Guardar&lt;/Button>
+        &lt;/div>
+
+        {imagen &amp;&amp; (
+      
+
+        &lt;Cropper
+            image={imagen}
+            crop={crop}
+            zoom={zoom}
+            aspect={4 / 3}
+            onCropChange={setCrop}
+            onCropComplete={onCropComplete}
+            onZoomChange={setZoom}
+        />
+
+   
+        
+        )}
+     
+
+    &lt;/Popup>
+  )
+}
+
+export default PopUpCropper;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Calendario.html">Calendario</a></li><li><a href="module-ChangePasswd.html">ChangePasswd</a></li><li><a href="module-CodeValidationPopup.html">CodeValidationPopup</a></li><li><a href="module-Contacto.html">Contacto</a></li><li><a href="module-Cribado.html">Cribado</a></li><li><a href="module-Estadisticas.html">Estadisticas</a></li><li><a href="module-FilePicker.html">FilePicker</a></li><li><a href="module-Galeria.html">Galeria</a></li><li><a href="module-HomePage.html">HomePage</a></li><li><a href="module-Landing.html">Landing</a></li><li><a href="module-Login.html">Login</a></li><li><a href="module-MainApp.html">MainApp</a></li><li><a href="module-PerfilPage.html">PerfilPage</a></li><li><a href="module-PopUpAmpliar.html">PopUpAmpliar</a></li><li><a href="module-PopUpAmpliarGaleria.html">PopUpAmpliarGaleria</a></li><li><a href="module-PopUpBody.html">PopUpBody</a></li><li><a href="module-PopUpCropper.html">PopUpCropper</a></li><li><a href="module-PopUpRegistrarse.html">PopUpRegistrarse</a></li><li><a href="module-PopUpResultados.html">PopUpResultados</a></li><li><a href="module-URLPicker.html">URLPicker</a></li></ul><h3>Global</h3><ul><li><a href="global.html#BuscadorPacientesPopUp">BuscadorPacientesPopUp</a></li><li><a href="global.html#InstruccionesPopup">InstruccionesPopup</a></li><li><a href="global.html#MyApp">MyApp</a></li><li><a href="global.html#NotFoundPage">NotFoundPage</a></li><li><a href="global.html#Tipos">Tipos</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Aug 07 2024 11:22:41 GMT+0200 (hora de verano de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

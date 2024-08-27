@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/file-piker.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/file-piker.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useEffect, useState }  from 'react';
+
+import { useFilePicker } from 'use-file-picker';
+import PopUpCropper from '../components/popup-recortar.jsx';
+import Swal from 'sweetalert2';
+
+import { MdCameraAlt } from "react-icons/md";
+
+
+import {
+  f7,
+  Button
+} from 'framework7-react';
+
+/**
+* @module FilePicker
+*/
+/**
+* FilePicker Component
+* @param {String} imagen -Imagen que va a ser elegida del dispositivo.
+* @param {function} setImagen -Funcion para setear la imagen.
+* @param {function} setFileSelected -Funcion para setear la variable de control de eleccion de archivo.
+* @param {function} handleAnalizar -Funcion para activar y proceder con el analisis.
+*
+* Este componente renderiza y da funcionalidad a la parte encargada de elegir recortar y mandar a analizar las imagenes.
+*
+* @returns {JSX.Element} 
+*/
+
+const FilePicker = ({imagen, setImagen, fileSelected, setFileSelected, handleAnalizar}) => {
+  
+  //#region DECLARACION FILE PICKER ------------------------------------------------------------------------
+
+ /**
+ * Declaracion del componente selector de archivos.
+ *
+ * @method
+ * @param {Object} openFilePicker - Función para abrir el selector de archivos.
+ * @param {Array&lt;Object>} filesContent - Contenido de los archivos seleccionados.
+ * @param {boolean} loading - Estado de carga mientras se seleccionan los archivos.
+ * @param {Array&lt;Object>} errors - Errores encontrados durante la selección de archivos.
+ * @returns {{openFilePicker: function, filesContent: Array&lt;Object>, loading: boolean, errors: Array&lt;Object>}} - Retorna los parámetros de la selección de archivos.
+ * @memberof module:FilePicker
+ * @name useFilePicker
+ */
+  const { openFilePicker, filesContent, loading, errors } = useFilePicker({
+    readAs: 'DataURL',
+    accept: 'image/*',
+    multiple: true,
+    limitFilesConfig: { max: 1 },
+    // minFileSize: 0.1, // in megabytes
+    maxFileSize: 20,
+    imageSizeRestrictions: {
+      maxWidth: 5000,
+      minWidth: 768,
+      maxHeight: 5000, // in pixels
+      minHeight: 600,
+    },
+
+  });
+
+  if (errors.length) {
+    console.log(errors)
+    for (const error in errors){
+      Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: error.name,
+      })  
+    }
+  }
+
+  /**
+  * Efecto que se activa cada vez que cambia FilesContent,
+  * es decir cada vez que el usuario elige un archivo nuevo.
+  * Se guarda como Imagen el archivo elegido para renderizarlo.
+  *
+  * @method
+  * @param {Array&lt;Object>} filesContent - Contenido de los archivos seleccionados.
+  * @returns {Image} - Imagen elegida.
+  * @memberof module:FilePicker
+  * @name useEffect
+  */
+  useEffect(() => {    
+    if (filesContent &amp;&amp; filesContent.length > 0) {
+      //console.log(filesContent[0].content)
+      setImagen(filesContent[0].content)
+      setFileSelected(true)
+      setImagenRecortada(false)
+    }
+  },[filesContent])
+  //#endregion
+
+  //#region DECLARACION POP-UP CENTRAR ------------------------------------------------------------------------
+  /**
+  * Variable de control del popup de centrado.
+  * @const {boolean} popUpCentrar 
+  */
+  const [popUpCentrar, setPopUpCentrar] = useState(false)
+  /**
+  * Variable de control de la imagen recortada.
+  * @const {boolean} imagenRecortada 
+  */
+  const [imagenRecortada, setImagenRecortada] = useState(false)
+
+  /**
+  * Alerta para centrar imagen.
+  *
+  * @method
+  * @memberof module:FilePicker
+  * @name alertRecorte
+  */
+  const alertRecorte = () => {
+    f7.dialog.alert('Por favor, centre la imagen antes de analizar.');
+  };
+  /**
+  * Manejadora para abrir recortar imagen.
+  *
+  * @method
+  * @memberof module:FilePicker
+  * @name handleCentrar
+  */
+  const handleCentrar = () => {
+    setPopUpCentrar(true)
+  }
+  /**
+  * Manejadora para cerrar recortar imagen.
+  *
+  * @method
+  * @memberof module:FilePicker
+  * @name closePopUpCentrar
+  */
+  const closePopUpCentrar = () => {
+    setPopUpCentrar(false)
+  }
+  //#endregion
+
+  //#region HANDLE ANALIZAR -----------------------------------------------------------------------------------
+  /**
+  * Manejadora para analizar imagen.
+  *
+  * @method
+  * @memberof module:FilePicker
+  * @name handleAnalizarClick
+  */
+  const handleAnalizarClick = () => {
+    handleAnalizar()
+  };
+
+  //#endregion
+  
+  //#region RETURN CODE ---------------------------------------------------------------------------------------
+  return (
+    &lt;div>
+     
+     {!fileSelected &amp;&amp; (
+        &lt;Button fill onClick={openFilePicker} color="teal" style={{ fontSize: '20px', margin: '5% 0' }}>
+          &lt;MdCameraAlt style={{ margin: '0 5px', fontSize: '20px' }} />
+          Seleccionar Imagen
+        &lt;/Button>
+      )}
+
+      {fileSelected &amp;&amp; (
+        &lt;div style={{display: 'grid', gridTemplateColumns: '35% 65%', alignItems: 'center'}}>
+          &lt;img src={imagen}  style={{ borderRadius: '8px', width: "100%", height: '180px', objectFit:'cover', border: '2px solid teal' }}/>
+          &lt;div style={{width: '95%', margin:'0 5%'}}> 
+            &lt;Button fill onClick={openFilePicker} color="teal" >Cambiar Imagen&lt;/Button>
+            &lt;Button fill onClick={handleCentrar}  color="teal" style={{margin:'7% 0'}}>Centrar Imagen&lt;/Button>
+            &lt;Button fill
+                    onClick={imagenRecortada ? handleAnalizarClick : alertRecorte} 
+                    style={{backgroundColor: imagenRecortada ? "#006689" : "gray"}}
+                    >Analizar&lt;/Button>  
+          &lt;/div>
+        &lt;/div>
+
+      )}
+      &lt;PopUpCropper showPopup={popUpCentrar} closePopup={closePopUpCentrar} imagen={imagen} setImagen={setImagen} setRecortado={setImagenRecortada}/>
+    &lt;/div>    
+  );
+  //#endregion
+}
+export default FilePicker</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Calendario.html">Calendario</a></li><li><a href="module-ChangePasswd.html">ChangePasswd</a></li><li><a href="module-CodeValidationPopup.html">CodeValidationPopup</a></li><li><a href="module-Contacto.html">Contacto</a></li><li><a href="module-Cribado.html">Cribado</a></li><li><a href="module-Estadisticas.html">Estadisticas</a></li><li><a href="module-FilePicker.html">FilePicker</a></li><li><a href="module-Galeria.html">Galeria</a></li><li><a href="module-HomePage.html">HomePage</a></li><li><a href="module-Landing.html">Landing</a></li><li><a href="module-Login.html">Login</a></li><li><a href="module-MainApp.html">MainApp</a></li><li><a href="module-PerfilPage.html">PerfilPage</a></li><li><a href="module-PopUpAmpliar.html">PopUpAmpliar</a></li><li><a href="module-PopUpAmpliarGaleria.html">PopUpAmpliarGaleria</a></li><li><a href="module-PopUpBody.html">PopUpBody</a></li><li><a href="module-PopUpCropper.html">PopUpCropper</a></li><li><a href="module-PopUpRegistrarse.html">PopUpRegistrarse</a></li><li><a href="module-PopUpResultados.html">PopUpResultados</a></li><li><a href="module-URLPicker.html">URLPicker</a></li></ul><h3>Global</h3><ul><li><a href="global.html#BuscadorPacientesPopUp">BuscadorPacientesPopUp</a></li><li><a href="global.html#InstruccionesPopup">InstruccionesPopup</a></li><li><a href="global.html#MyApp">MyApp</a></li><li><a href="global.html#NotFoundPage">NotFoundPage</a></li><li><a href="global.html#Tipos">Tipos</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Aug 07 2024 11:22:41 GMT+0200 (hora de verano de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

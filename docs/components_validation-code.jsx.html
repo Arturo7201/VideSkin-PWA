@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/validation-code.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/validation-code.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { userConfig } from '../js/config';
+
+
+import Swal from 'sweetalert2';
+import { 
+  Popup,
+  Page, 
+  Block, 
+  Button, 
+  List, 
+  ListInput, 
+  Icon
+} from 'framework7-react';
+
+import '../css/custom-styles.css'
+
+
+
+/**
+* @module CodeValidationPopup
+*/
+/**
+* FilePicker Component
+* @param {boolean} props.showPopup - Indica si el PopUp está visible.
+* @param {function} props.closePopup - Función para cerrar el PopUp.
+* @param {String} props.user -Nombre de ususario.
+* @param {function} props.closeRegisterPopup -Funcion para cerrar el registro.
+*
+* Este componente renderiza y da funcionalidad a la parte encargada de elegir recortar y mandar a analizar las imagenes.
+*
+* @returns {JSX.Element} 
+*/
+
+const CodeValidationPopup = ({ showPopup, closePopup, user, closeRegisterPopup}) => {
+  /**
+  * Formulario de validación.
+  * @const {Object} formData 
+  */
+  const [formData, setFormData] = useState({
+    username: '',
+    code: '',
+  });
+  /**
+  * Efecto que a la carga del usuario actualiza el formulario.
+  *
+  * @method
+  * @memberof module:CodeValidationPopup
+  * @name useEffect
+  */
+  useEffect(() => {
+    setFormData({ ...formData, username: user })
+  }, [user]);
+
+
+  /**
+  * Pide la validación del usuario a la API.
+  *
+  * @async
+  * @method
+  * @param {Object} formData
+  * @returns {boolean} 
+  * @throws {Error} - Si ocurre un error durante la solicitud.
+  * @memberof module:CodeValidationPopup
+  * @name handleCodeSubmit
+  */ 
+  const handleCodeSubmit = () => {
+
+    setFormData({ ...formData, username: user })
+
+    console.log('Formulario enviado:', formData);
+
+    axios.post(`http://${userConfig.serverIP}:${userConfig.serverPort}/validate`, { form: formData })
+      .then((response) => {
+
+        Swal.fire({
+          icon: "success",
+          title: "Tu cuenta ha sido validada "+formData.username,
+          showConfirmButton: false,
+          timer: 1500
+        });
+
+        closePopup()
+        closeRegisterPopup()
+
+        
+      })
+      .catch((error) => {
+        console.error(error.message);
+        try{
+          console.error(error.response.data.error)
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: error.response.data.error,
+            footer: '&lt;a href="">Why do I have this issue?&lt;/a>'
+          })
+          closePopup()
+          closeRegisterPopup()
+        }catch{
+          console.error(error.message)
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: error.message,
+            footer: '&lt;a href="">Why do I have this issue?&lt;/a>'
+          })
+          closePopup()
+          closeRegisterPopup()
+        }
+      });
+  };
+
+  return (
+    &lt;Popup tabletFullscreen opened={showPopup} onClose={closePopup} style={{
+                                                            position: 'fixed',
+                                                            top: '50%',    //ESTABLECE EL POPUP EN LA MITAD DEL CONTENEDOR(PANTALLA)
+                                                            left: '50%',
+                                                            //marginTop: '-35%', //SE DESPLACA HACIA ARRIBA 35% DEL CONTENEDRO(PANTALLA)
+                                                            //marginLeft: '-35%',
+                                                            marginTop: '-155px', // Mitad de la altura del Popup
+                                                            marginLeft: '-35%',  // Mitad del ancho del Popup
+                                                            //transform: 'translate(-50%, -50%)',
+                                                            maxWidth: '70%',
+                                                            maxHeight: '315px',
+                                                            border: '2px solid #006689',
+                                                            borderTop: '0',
+                                                            borderRadius: '30px',
+                                                          }}>
+      &lt;Page>
+
+        &lt;div className="navbar" style={{background: '#006689', color: '#ffffff', textAlign: 'center', fontSize: '170%', lineHeight: '250%'}}>
+          Validar la cuenta
+        &lt;/div>
+
+        &lt;Block style={{ margin: '0% 2%',}}>
+          &lt;p style={{margin: '2%', fontWeight: 'bold'}}>Introduzca el código que hemos enviado a su correo electrónico:&lt;/p>
+        &lt;/Block>
+
+        &lt;List strongIos dividersIos insetIos form style={{ margin: '0% 2%',}} >
+
+          &lt;ListInput
+                id="code"
+                label="Código"
+                type="text"
+                placeholder="Enter code"
+                info=""
+                pattern="^\d{5}$"
+                errorMessage="¡El código son 5 números!"
+                required
+                validate
+                clearButton
+                onInput={(e) => setFormData({ ...formData, code: e.target.value })}
+              >
+              &lt;Icon ios="f7:person" md="material:person" slot='media'/>
+          &lt;/ListInput>
+        
+          &lt;Block>
+            &lt;Button fill onClick={handleCodeSubmit} >Validar Código&lt;/Button>
+          &lt;/Block>
+        &lt;/List>
+
+      &lt;/Page>
+    &lt;/Popup>
+  );
+};
+
+export default CodeValidationPopup;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Calendario.html">Calendario</a></li><li><a href="module-ChangePasswd.html">ChangePasswd</a></li><li><a href="module-CodeValidationPopup.html">CodeValidationPopup</a></li><li><a href="module-Contacto.html">Contacto</a></li><li><a href="module-Cribado.html">Cribado</a></li><li><a href="module-Estadisticas.html">Estadisticas</a></li><li><a href="module-FilePicker.html">FilePicker</a></li><li><a href="module-Galeria.html">Galeria</a></li><li><a href="module-HomePage.html">HomePage</a></li><li><a href="module-Landing.html">Landing</a></li><li><a href="module-Login.html">Login</a></li><li><a href="module-MainApp.html">MainApp</a></li><li><a href="module-PerfilPage.html">PerfilPage</a></li><li><a href="module-PopUpAmpliar.html">PopUpAmpliar</a></li><li><a href="module-PopUpAmpliarGaleria.html">PopUpAmpliarGaleria</a></li><li><a href="module-PopUpBody.html">PopUpBody</a></li><li><a href="module-PopUpCropper.html">PopUpCropper</a></li><li><a href="module-PopUpRegistrarse.html">PopUpRegistrarse</a></li><li><a href="module-PopUpResultados.html">PopUpResultados</a></li><li><a href="module-URLPicker.html">URLPicker</a></li></ul><h3>Global</h3><ul><li><a href="global.html#BuscadorPacientesPopUp">BuscadorPacientesPopUp</a></li><li><a href="global.html#InstruccionesPopup">InstruccionesPopup</a></li><li><a href="global.html#MyApp">MyApp</a></li><li><a href="global.html#NotFoundPage">NotFoundPage</a></li><li><a href="global.html#Tipos">Tipos</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Aug 07 2024 11:22:41 GMT+0200 (hora de verano de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

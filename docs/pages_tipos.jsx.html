@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: pages/tipos.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: pages/tipos.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect } from 'react';
+
+import { MdArrowBack } from 'react-icons/md';
+
+import { CgDanger } from "react-icons/cg";
+import { PiWarningFill } from "react-icons/pi";
+import { MdHealthAndSafety } from "react-icons/md";
+
+
+import { 
+    f7,
+    CardContent,
+    CardHeader,
+   } from 'framework7-react';
+
+import '../css/custom-styles.css'
+
+import styled from "styled-components";
+import '../css/landing.css'
+
+/**
+* Tipos Page
+*
+* Este componente representa la página con los tipos de lesión.
+* @method
+* @returns {JSX.Element} 
+* @name Tipos
+*/
+
+const Tipos = () => {
+
+  
+  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile2, setIsMobile2] = useState(false);
+  const [isMobile3, setIsMobile3] = useState(false);
+
+  useEffect(() => { 
+    // Función para comprobar si la pantalla es lo suficientemente estrecha 
+    const checkIfMobile = () => {
+        const containerWidth = document.getElementById('container').offsetWidth;
+        console.log(containerWidth)
+        setIsMobile(containerWidth &lt;= 1170); // Ajusta este valor 
+    };
+    const checkIfMobile2 = () => {
+        const containerWidth = document.getElementById('container').offsetWidth;
+        console.log(containerWidth)
+        setIsMobile2(containerWidth &lt;= 550); // Ajusta este valor 
+    };
+    const checkIfMobile3 = () => {
+        const containerWidth = document.getElementById('container').offsetWidth;
+        console.log(containerWidth)
+        setIsMobile3(containerWidth &lt;= 1400); // Ajusta este valor 
+    };
+
+    // Llama a la función de comprobación cuando se carga la página y cada vez que se redimensiona la ventana
+    checkIfMobile();
+    checkIfMobile2();
+    checkIfMobile3();
+    window.addEventListener('resize', checkIfMobile);
+    window.addEventListener('resize', checkIfMobile2);
+    window.addEventListener('resize', checkIfMobile3);
+
+    // Limpia el event listener al desmontar el componente para evitar fugas de memoria
+    return () => {
+        window.removeEventListener('resize', checkIfMobile);
+        window.removeEventListener('resize', checkIfMobile2);
+        window.removeEventListener('resize', checkIfMobile3);
+    };
+  }, []);
+
+
+  const handleBack = () => {
+    f7.views.main.router.back();
+  }
+
+
+
+  return (
+ 
+    &lt;div>
+
+        &lt;div class="page" style={{backgroundColor: '#EFEFF4'}}>
+
+            &lt;div className="navbar" style={{display: 'grid', gridTemplateColumns: '5% 1fr', background: 'teal', color: '#ffffff', textAlign: 'center', alignItems: 'center',  fontSize: '170%', lineHeight: '250%'}}>
+            &lt;MdArrowBack style={{ fontSize: '24px', marginLeft: '90%', cursor: 'pointer'}} onClick={handleBack}/>
+            &lt;span style={{ marginLeft: '10%', marginRight: '15%', textAlign: 'center'}}>Tipos de lesiones&lt;/span>
+            &lt;/div>
+
+            &lt;div class="page-content" id='container'>
+
+                {isMobile ? (
+
+                    &lt;Container>
+                        &lt;div className='sec-1'>
+                            Lesiones malignas
+                        &lt;/div>
+                        
+
+                        &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #ac3939'}}>
+                            &lt;CardHeader style={{padding: '10px'}}>
+                                &lt;img className="tipo" src="../images/MEL.jpg"/>
+                                &lt;div className={isMobile ? 'tipo-tittle1-mobile' : 'tipo-tittle1'} >Melanoma&lt;/div>
+                            &lt;/CardHeader>
+                            &lt;CardContent>
+                                {isMobile2 ? (
+                                    &lt;div className="tipo-subtittle1-mobile">
+                                        &lt;div className="first-line">
+                                            &lt;CgDanger style={{fontSize: '20px', color: 'red'}}/>
+                                            &lt;div>
+                                                Riesgo &lt;span  className='alto'> ALTO&lt;/span > :
+                                            &lt;/div>
+                                        &lt;/div>
+                                        &lt;p className="second-line"> Cáncer de piel&lt;/p>
+                                    
+                                    &lt;/div>
+                                ):(
+                                    &lt;p className="tipo-subtittle1">&lt;CgDanger style={{ width: '10%', fontSize: '20px', color: 'red' }}/>Riesgo &lt;p className='alto'> ALTO&lt;/p>: Cáncer de piel&lt;/p>
+
+                                )}
+                                &lt;p className='text-body'>
+                                El melanoma es un tipo de cáncer de piel altamente agresivo que se desarrolla a partir de los melanocitos, las células que producen el pigmento melanina. Se caracteriza por un crecimiento anormal de lunares o manchas en la piel que pueden volverse irregulares en forma y color, y pueden aparecer en cualquier parte del cuerpo.
+                                &lt;/p>
+                            &lt;/CardContent>
+                        &lt;/div>
+
+                        &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #ac3939'}}>
+                            &lt;CardHeader style={{padding: '10px'}}>
+                                &lt;img className="tipo" src="../images/BCC.jpg"/>
+                                &lt;div className={isMobile ? 'tipo-tittle1-mobile' : 'tipo-tittle1'}>Carcinoma Basocelular&lt;/div>
+                            &lt;/CardHeader>
+                            &lt;CardContent>
+                                {isMobile2 ? (
+                                        &lt;div className="tipo-subtittle1-mobile">
+                                            &lt;div className="first-line">
+                                                &lt;CgDanger style={{fontSize: '20px', color: 'red'}}/>
+                                                &lt;div>
+                                                    Riesgo &lt;span  className='alto'> ALTO&lt;/span > :
+                                                &lt;/div>
+                                            &lt;/div>
+                                            &lt;p className="second-line"> Cáncer de piel&lt;/p>
+                                        
+                                        &lt;/div>
+                                    ):(
+                                        &lt;p className="tipo-subtittle1">&lt;CgDanger style={{ width: '10%', fontSize: '20px', color: 'red' }}/>Riesgo &lt;p className='alto'> ALTO&lt;/p>: Cáncer de piel&lt;/p>
+
+                                )}
+                                &lt;p className='text-body'>
+                                El carcinoma basocelular es el tipo más común de cáncer de piel. A menudo se presenta como una pequeña protuberancia o bulto en la piel que puede ser de color rosa, rojo, blanco o translúcido. Si bien rara vez se disemina a otras partes del cuerpo, puede causar daño localizado si no se trata.                            &lt;/p>
+                            &lt;/CardContent>
+                        &lt;/div>
+
+                        &lt;div className='sec-2'>
+                            Lesiones potencialmente malignas
+                        &lt;/div>
+
+                        &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #ffc34d'}}>
+                            &lt;CardHeader style={{padding: '10px'}}>
+                                &lt;img className="tipo" src="../images/NV.jpg"/>
+                                &lt;div className={isMobile ? 'tipo-tittle2-mobile' : 'tipo-tittle2'} >Nevus&lt;/div>
+                            &lt;/CardHeader>
+                            &lt;CardContent>
+                                {isMobile2 ? (
+                                        &lt;div className="tipo-subtittle2-mobile">
+                                            &lt;div className="first-line">
+                                                &lt;PiWarningFill style={{fontSize: '20px', color: 'orange'}}/>
+                                                &lt;div>
+                                                    Riesgo &lt;span  className='medio'> POTENCIAL&lt;/span > :
+                                                &lt;/div>
+                                            &lt;/div>
+                                            &lt;p className="second-line"> Lunar&lt;/p>
+                                        
+                                        &lt;/div>
+                                    ):(
+                                        &lt;p className="tipo-subtittle2">&lt;PiWarningFill style={{ width: '10%', fontSize: '20px', color: 'orange' }}/>Riesgo &lt;p className='medio'> POTECIAL&lt;/p>: Lunar&lt;/p>
+
+                                )}
+                                &lt;p className='text-body'>
+                                Los nevus, comúnmente conocidos como lunares, son crecimientos pigmentados en la piel que pueden variar en tamaño, forma y color. La mayoría de los nevus son benignos, pero algunos pueden transformarse en melanoma, especialmente si experimentan cambios en el tamaño, forma o color con el tiempo.                            &lt;/p>
+                            &lt;/CardContent>
+                        &lt;/div>
+
+                        &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #ffc34d'}}>
+                            &lt;CardHeader style={{padding: '10px'}}>
+                                &lt;img className="tipo" src="../images/AKIEC.jpg"/>
+                                &lt;div className={isMobile ? 'tipo-tittle2-mobile' : 'tipo-tittle2'} >Queratosis Actínica&lt;/div>
+                            &lt;/CardHeader>
+                            &lt;CardContent>
+                                {isMobile2 ? (
+                                        &lt;div className="tipo-subtittle2-mobile">
+                                            &lt;div className="first-line">
+                                                &lt;PiWarningFill style={{fontSize: '20px', color: 'orange'}}/>
+                                                &lt;div>
+                                                    Riesgo &lt;span  className='medio'> POTENCIAL&lt;/span > :
+                                                &lt;/div>
+                                            &lt;/div>
+                                            &lt;p className="second-line"> Lesión precancerosa&lt;/p>
+                                        
+                                        &lt;/div>
+                                    ):(
+                                        &lt;p className="tipo-subtittle2">&lt;PiWarningFill style={{ width: '10%', fontSize: '20px', color: 'orange' }}/>Riesgo &lt;p className='medio'> POTECIAL&lt;/p>: Lesión precancerosa&lt;/p>
+
+                                )}
+                                &lt;p className='text-body'>
+                                La queratosis actínica, también conocida como queratosis solar, es una lesión precancerosa causada por la exposición crónica a la radiación ultravioleta del sol. Se manifiesta como manchas rojas, ásperas y escamosas en la piel que pueden volverse sensibles o dolorosas.                            &lt;/p>
+                            &lt;/CardContent>
+                        &lt;/div>
+
+                        &lt;div className='sec-3'>
+                            Lesiones benignas
+                        &lt;/div>
+
+                        &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                            &lt;CardHeader style={{padding: '10px'}}>
+                                &lt;img className="tipo" src="../images/BKL.jpg"/>
+                                &lt;div className={isMobile ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Queratosis Seborreica&lt;/div>
+                            &lt;/CardHeader>
+                            &lt;CardContent>
+                                {isMobile2 ? (
+                                        &lt;div className="tipo-subtittle3-mobile">
+                                            &lt;div className="first-line">
+                                                &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                &lt;div>
+                                                    &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                &lt;/div>
+                                            &lt;/div>
+                                            &lt;p className="second-line"> Mancha de edad&lt;/p>
+                                        
+                                        &lt;/div>
+                                    ):(
+                                        &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Mancha de edad&lt;/p>
+
+                                )}
+                                &lt;p className='text-body'>
+                                Las queratosis seborreicas, también llamadas verrugas seborreicas o manchas de la edad, son crecimientos cutáneos benignos que generalmente aparecen en áreas de la piel expuestas al sol. A menudo son de color marrón oscuro o negro y tienen una textura cerosa o escamosa.                            &lt;/p>
+                            &lt;/CardContent>
+                        &lt;/div>
+
+                        &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                            &lt;CardHeader style={{padding: '10px'}}>
+                                &lt;img className="tipo" src="../images/DF.jpg"/>
+                                &lt;div className={isMobile ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Dermatofibroma&lt;/div>
+                            &lt;/CardHeader>
+                            &lt;CardContent>
+                            {isMobile2 ? (
+                                        &lt;div className="tipo-subtittle3-mobile">
+                                            &lt;div className="first-line">
+                                                &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                &lt;div>
+                                                    &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                &lt;/div>
+                                            &lt;/div>
+                                            &lt;p className="second-line"> Lesión benigna&lt;/p>
+                                        
+                                        &lt;/div>
+                                    ):(
+                                        &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Lesión benigna&lt;/p>
+
+                                )}
+                                &lt;p className='text-body'>
+                                El dermatofibroma es una lesión cutánea benigna que se desarrolla a partir de células fibroblásticas en la dermis de la piel. Por lo general, aparece como un pequeño bulto duro de color marrón o rosa que puede tener una apariencia ligeramente elevada. Aunque son inofensivos, a veces pueden confundirse con melanoma debido a su apariencia.                            &lt;/p>
+                            &lt;/CardContent>
+                        &lt;/div>
+
+                        &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                            &lt;CardHeader style={{padding: '10px'}}>
+                                &lt;img className="tipo" src="../images/VASC.jpg"/>
+                                &lt;div className={isMobile ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Lesiones Vasculares&lt;/div>
+                            &lt;/CardHeader>
+                            &lt;CardContent>
+                            {isMobile2 ? (
+                                        &lt;div className="tipo-subtittle3-mobile">
+                                            &lt;div className="first-line">
+                                                &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                &lt;div>
+                                                    &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                &lt;/div>
+                                            &lt;/div>
+                                            &lt;p className="second-line"> Lesión benigna&lt;/p>
+                                        
+                                        &lt;/div>
+                                    ):(
+                                        &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Lesión benigna&lt;/p>
+
+                                )}
+                                &lt;p className='text-body'>
+                                Las lesiones vasculares son problemas en los vasos sanguíneos de la piel. Incluyen hemangiomas (manchas rojas en bebés), malformaciones vasculares y telangiectasias (pequeñas venas visibles). Estas lesiones pueden ser de nacimiento o desarrollarse con el tiempo. En términos cancerígenos son inofensivas, aunque pueden necesitar tratamiento si afectan la apariencia o la función.                            &lt;/p>
+                            &lt;/CardContent>
+                        &lt;/div>
+
+
+
+
+
+                        
+                    &lt;/Container>
+
+                ):(
+                    &lt;Container>
+
+                        &lt;div className='sec-1'>
+                            Lesiones malignas
+                        &lt;/div>
+
+                        &lt;div style={{display: 'grid', gridTemplateColumns: '45% 45%', gap: '10%'}}>
+                            &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #ac3939'}}>
+                                &lt;CardHeader style={{padding: '10px'}}>
+                                    &lt;img className="tipo" src="../images/MEL.jpg"/>
+                                    &lt;div className={isMobile ? 'tipo-tittle1-mobile' : 'tipo-tittle1'} >Melanoma&lt;/div>
+                                &lt;/CardHeader>
+                                &lt;CardContent>
+                                    {isMobile2 ? (
+                                        &lt;div className="tipo-subtittle1-mobile">
+                                            &lt;div className="first-line">
+                                                &lt;CgDanger style={{fontSize: '20px', color: 'red'}}/>
+                                                &lt;div>
+                                                    Riesgo &lt;span  className='alto'> ALTO&lt;/span > :
+                                                &lt;/div>
+                                            &lt;/div>
+                                            &lt;p className="second-line"> Cáncer de piel&lt;/p>
+                                        
+                                        &lt;/div>
+                                    ):(
+                                        &lt;p className="tipo-subtittle1">&lt;CgDanger style={{ width: '10%', fontSize: '20px', color: 'red' }}/>Riesgo &lt;p className='alto'> ALTO&lt;/p>: Cáncer de piel&lt;/p>
+
+                                    )}
+                                    &lt;p className='text-body'>
+                                    El melanoma es un tipo de cáncer de piel altamente agresivo que se desarrolla a partir de los melanocitos, las células que producen el pigmento melanina. Se caracteriza por un crecimiento anormal de lunares o manchas en la piel que pueden volverse irregulares en forma y color, y pueden aparecer en cualquier parte del cuerpo.
+                                    &lt;/p>
+                                &lt;/CardContent>
+                            &lt;/div>
+
+                            &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #ac3939'}}>
+                                &lt;CardHeader style={{padding: '10px'}}>
+                                    &lt;img className="tipo" src="../images/BCC.jpg"/>
+                                    &lt;div className={isMobile ? 'tipo-tittle1-mobile' : 'tipo-tittle1'}>Carcinoma Basocelular&lt;/div>
+                                &lt;/CardHeader>
+                                &lt;CardContent>
+                                    {isMobile2 ? (
+                                            &lt;div className="tipo-subtittle1-mobile">
+                                                &lt;div className="first-line">
+                                                    &lt;CgDanger style={{fontSize: '20px', color: 'red'}}/>
+                                                    &lt;div>
+                                                        Riesgo &lt;span  className='alto'> ALTO&lt;/span > :
+                                                    &lt;/div>
+                                                &lt;/div>
+                                                &lt;p className="second-line"> Cáncer de piel&lt;/p>
+                                            
+                                            &lt;/div>
+                                        ):(
+                                            &lt;p className="tipo-subtittle1">&lt;CgDanger style={{ width: '10%', fontSize: '20px', color: 'red' }}/>Riesgo &lt;p className='alto'> ALTO&lt;/p>: Cáncer de piel&lt;/p>
+
+                                    )}
+                                    &lt;p className='text-body'>
+                                    El carcinoma basocelular es el tipo más común de cáncer de piel. A menudo se presenta como una pequeña protuberancia o bulto en la piel que puede ser de color rosa, rojo, blanco o translúcido. Si bien rara vez se disemina a otras partes del cuerpo, puede causar daño localizado si no se trata.                            &lt;/p>
+                                &lt;/CardContent>
+                            &lt;/div>
+                        &lt;/div>
+
+                        
+                        &lt;div className='sec-2'>
+                            Lesiones potencialmente malignas
+                        &lt;/div>
+
+                        &lt;div style={{display: 'grid', gridTemplateColumns: '45% 45%', gap: '10%'}}>
+                            &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #ffc34d'}}>
+                                &lt;CardHeader style={{padding: '10px'}}>
+                                    &lt;img className="tipo" src="../images/NV.jpg"/>
+                                    &lt;div className={isMobile ? 'tipo-tittle2-mobile' : 'tipo-tittle2'} >Nevus&lt;/div>
+                                &lt;/CardHeader>
+                                &lt;CardContent>
+                                    {isMobile2 ? (
+                                            &lt;div className="tipo-subtittle2-mobile">
+                                                &lt;div className="first-line">
+                                                    &lt;PiWarningFill style={{fontSize: '20px', color: 'orange'}}/>
+                                                    &lt;div>
+                                                        Riesgo &lt;span  className='medio'> POTENCIAL&lt;/span > :
+                                                    &lt;/div>
+                                                &lt;/div>
+                                                &lt;p className="second-line"> Lunar&lt;/p>
+                                            
+                                            &lt;/div>
+                                        ):(
+                                            &lt;p className="tipo-subtittle2">&lt;PiWarningFill style={{ width: '10%', fontSize: '20px', color: 'orange' }}/>Riesgo &lt;p className='medio'> POTECIAL&lt;/p>: Lunar&lt;/p>
+
+                                    )}
+                                    &lt;p className='text-body'>
+                                    Los nevus, comúnmente conocidos como lunares, son crecimientos pigmentados en la piel que pueden variar en tamaño, forma y color. La mayoría de los nevus son benignos, pero algunos pueden transformarse en melanoma, especialmente si experimentan cambios en el tamaño, forma o color con el tiempo.                            &lt;/p>
+                                &lt;/CardContent>
+                            &lt;/div>
+
+                            &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #ffc34d'}}>
+                                &lt;CardHeader style={{padding: '10px'}}>
+                                    &lt;img className="tipo" src="../images/AKIEC.jpg"/>
+                                    &lt;div className={isMobile ? 'tipo-tittle2-mobile' : 'tipo-tittle2'} >Queratosis Actínica&lt;/div>
+                                &lt;/CardHeader>
+                                &lt;CardContent>
+                                    {isMobile2 ? (
+                                            &lt;div className="tipo-subtittle2-mobile">
+                                                &lt;div className="first-line">
+                                                    &lt;PiWarningFill style={{fontSize: '20px', color: 'orange'}}/>
+                                                    &lt;div>
+                                                        Riesgo &lt;span  className='medio'> POTENCIAL&lt;/span > :
+                                                    &lt;/div>
+                                                &lt;/div>
+                                                &lt;p className="second-line"> Lesión precancerosa&lt;/p>
+                                            
+                                            &lt;/div>
+                                        ):(
+                                            &lt;p className="tipo-subtittle2">&lt;PiWarningFill style={{ width: '10%', fontSize: '20px', color: 'orange' }}/>Riesgo &lt;p className='medio'> POTECIAL&lt;/p>: Lesión precancerosa&lt;/p>
+
+                                    )}
+                                    &lt;p className='text-body'>
+                                    La queratosis actínica, también conocida como queratosis solar, es una lesión precancerosa causada por la exposición crónica a la radiación ultravioleta del sol. Se manifiesta como manchas rojas, ásperas y escamosas en la piel que pueden volverse sensibles o dolorosas.                            &lt;/p>
+                                &lt;/CardContent>
+                            &lt;/div>
+                        &lt;/div>
+
+                        &lt;div className='sec-3'>
+                            Lesiones benignas
+                        &lt;/div>
+
+                    
+
+                        { isMobile3 ? (
+                            &lt;div>
+                                &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                                    &lt;CardHeader style={{padding: '10px'}}>
+                                        &lt;img className="tipo" src="../images/BKL.jpg"/>
+                                        &lt;div className={isMobile ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Queratosis Seborreica&lt;/div>
+                                    &lt;/CardHeader>
+                                    &lt;CardContent>
+                                        {isMobile2 ? (
+                                                &lt;div className="tipo-subtittle3-mobile">
+                                                    &lt;div className="first-line">
+                                                        &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                        &lt;div>
+                                                            &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                        &lt;/div>
+                                                    &lt;/div>
+                                                    &lt;p className="second-line"> Mancha de edad&lt;/p>
+                                                
+                                                &lt;/div>
+                                            ):(
+                                                &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Mancha de edad&lt;/p>
+            
+                                        )}
+                                        &lt;p className='text-body'>
+                                        Las queratosis seborreicas, también llamadas verrugas seborreicas o manchas de la edad, son crecimientos cutáneos benignos que generalmente aparecen en áreas de la piel expuestas al sol. A menudo son de color marrón oscuro o negro y tienen una textura cerosa o escamosa.                            &lt;/p>
+                                    &lt;/CardContent>
+                                &lt;/div>
+        
+                                &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                                    &lt;CardHeader style={{padding: '10px'}}>
+                                        &lt;img className="tipo" src="../images/DF.jpg"/>
+                                        &lt;div className={isMobile ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Dermatofibroma&lt;/div>
+                                    &lt;/CardHeader>
+                                    &lt;CardContent>
+                                    {isMobile2 ? (
+                                                &lt;div className="tipo-subtittle3-mobile">
+                                                    &lt;div className="first-line">
+                                                        &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                        &lt;div>
+                                                            &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                        &lt;/div>
+                                                    &lt;/div>
+                                                    &lt;p className="second-line"> Lesión benigna&lt;/p>
+                                                
+                                                &lt;/div>
+                                            ):(
+                                                &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Lesión benigna&lt;/p>
+            
+                                        )}
+                                        &lt;p className='text-body'>
+                                        El dermatofibroma es una lesión cutánea benigna que se desarrolla a partir de células fibroblásticas en la dermis de la piel. Por lo general, aparece como un pequeño bulto duro de color marrón o rosa que puede tener una apariencia ligeramente elevada. Aunque son inofensivos, a veces pueden confundirse con melanoma debido a su apariencia.                            &lt;/p>
+                                    &lt;/CardContent>
+                                &lt;/div>
+            
+                                &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                                    &lt;CardHeader style={{padding: '10px'}}>
+                                        &lt;img className="tipo" src="../images/VASC.jpg"/>
+                                        &lt;div className={isMobile ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Lesiones Vasculares&lt;/div>
+                                    &lt;/CardHeader>
+                                    &lt;CardContent>
+                                    {isMobile2 ? (
+                                                &lt;div className="tipo-subtittle3-mobile">
+                                                    &lt;div className="first-line">
+                                                        &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                        &lt;div>
+                                                            &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                        &lt;/div>
+                                                    &lt;/div>
+                                                    &lt;p className="second-line"> Lesión benigna&lt;/p>
+                                                
+                                                &lt;/div>
+                                            ):(
+                                                &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Lesión benigna&lt;/p>
+            
+                                        )}
+                                        &lt;p className='text-body'>
+                                        Las lesiones vasculares son problemas en los vasos sanguíneos de la piel. Incluyen hemangiomas (manchas rojas en bebés), malformaciones vasculares y telangiectasias (pequeñas venas visibles). Estas lesiones pueden ser de nacimiento o desarrollarse con el tiempo. En términos cancerígenos son inofensivas, aunque pueden necesitar tratamiento si afectan la apariencia o la función.                            &lt;/p>
+                                    &lt;/CardContent>
+                                &lt;/div>
+                            &lt;/div>
+
+                        ):(
+                            &lt;div style={{display: 'grid', gridTemplateColumns: '32% 32% 32%', gap: '2%'}}>
+                                &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                                    &lt;CardHeader style={{padding: '10px'}}>
+                                        &lt;img className="tipo" src="../images/BKL.jpg"/>
+                                        &lt;div className={isMobile ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Queratosis Seborreica&lt;/div>
+                                    &lt;/CardHeader>
+                                    &lt;CardContent>
+                                        {isMobile2 ? (
+                                                &lt;div className="tipo-subtittle3-mobile">
+                                                    &lt;div className="first-line">
+                                                        &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                        &lt;div>
+                                                        &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                        &lt;/div>
+                                                    &lt;/div>
+                                                    &lt;p className="second-line"> Mancha de edad&lt;/p>
+                                                
+                                                &lt;/div>
+                                            ):(
+                                                &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Mancha de edad&lt;/p>
+
+                                        )}
+                                        &lt;p className='text-body'>
+                                        Las queratosis seborreicas, también llamadas verrugas seborreicas o manchas de la edad, son crecimientos cutáneos benignos que generalmente aparecen en áreas de la piel expuestas al sol. A menudo son de color marrón oscuro o negro y tienen una textura cerosa o escamosa.                            &lt;/p>
+                                    &lt;/CardContent>
+                                &lt;/div>
+
+                                &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                                    &lt;CardHeader style={{padding: '10px'}}>
+                                        &lt;img className="tipo" src="../images/DF.jpg"/>
+                                        &lt;div className={isMobile ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Dermatofibroma&lt;/div>
+                                    &lt;/CardHeader>
+                                    &lt;CardContent>
+                                    {isMobile2 ? (
+                                                &lt;div className="tipo-subtittle3-mobile">
+                                                    &lt;div className="first-line">
+                                                        &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                        &lt;div>
+                                                        &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                        &lt;/div>
+                                                    &lt;/div>
+                                                    &lt;p className="second-line"> Lesión benigna&lt;/p>
+                                                
+                                                &lt;/div>
+                                            ):(
+                                                &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Lesión benigna&lt;/p>
+
+                                        )}
+                                        &lt;p className='text-body'>
+                                        El dermatofibroma es una lesión cutánea benigna que se desarrolla a partir de células fibroblásticas en la dermis de la piel. Por lo general, aparece como un pequeño bulto duro de color marrón o rosa que puede tener una apariencia ligeramente elevada. Aunque son inofensivos, a veces pueden confundirse con melanoma debido a su apariencia.                            &lt;/p>
+                                    &lt;/CardContent>
+                                &lt;/div>
+
+                                &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                                    &lt;CardHeader style={{padding: '10px'}}>
+                                        &lt;img className="tipo" src="../images/VASC.jpg"/>
+                                        &lt;div className={isMobile ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Lesiones Vasculares&lt;/div>
+                                    &lt;/CardHeader>
+                                    &lt;CardContent>
+                                    {isMobile2 ? (
+                                                &lt;div className="tipo-subtittle3-mobile">
+                                                    &lt;div className="first-line">
+                                                        &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                        &lt;div>
+                                                        &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                        &lt;/div>
+                                                    &lt;/div>
+                                                    &lt;p className="second-line"> Lesión benigna&lt;/p>
+                                                
+                                                &lt;/div>
+                                            ):(
+                                                &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Lesión benigna&lt;/p>
+
+                                        )}
+                                        &lt;p className='text-body'>
+                                        Las lesiones vasculares son problemas en los vasos sanguíneos de la piel. Incluyen hemangiomas (manchas rojas en bebés), malformaciones vasculares y telangiectasias (pequeñas venas visibles). Estas lesiones pueden ser de nacimiento o desarrollarse con el tiempo. En términos cancerígenos son inofensivas, aunque pueden necesitar tratamiento si afectan la apariencia o la función.                            &lt;/p>
+                                    &lt;/CardContent>
+                                &lt;/div>
+                            &lt;/div>
+                        )}
+                        
+                    &lt;/Container>
+
+                )}
+
+            &lt;/div>
+        &lt;/div>
+
+    &lt;/div>
+  );
+};
+
+export default Tipos;
+
+const Container = styled.div`
+  height: auto;
+  width: 90%;
+  margin: 1% auto;
+
+`
+
+const TextIcon = styled.div`
+  display: felx;
+  align-items: center;              /* Centrar verticalmente los elementos */
+
+  width: 90%;
+  margin: 1% auto;
+`
+
+const ImageContainer = styled.div`
+  height: auto;
+  width: 70%;
+
+
+  max-width: 310px; /* Ancho máximo de 500px */
+  margin: 1% auto;
+
+  overflow: hidden;
+
+  position: relative;
+
+  
+  border: 1px solid blue;
+`
+
+const Imagen = styled.img`
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+`
+const Marker = styled.div`
+  position: absolute;
+
+  top: ${({ y }) => `${y}%`};
+  left: ${({ x }) => `${x}%`};  
+  
+  width: 15px; 
+  height: 15px; 
+  background-color: red; 
+  border-radius: 50%; 
+`
+const ContainerButton = styled.div`
+  height: auto;
+  width: 100%;
+  max-width: 700px; /* Ancho máximo de 500px */
+
+  margin: 10px auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2%;
+
+  border: 1px solid red;
+`
+
+
+
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Calendario.html">Calendario</a></li><li><a href="module-ChangePasswd.html">ChangePasswd</a></li><li><a href="module-CodeValidationPopup.html">CodeValidationPopup</a></li><li><a href="module-Contacto.html">Contacto</a></li><li><a href="module-Cribado.html">Cribado</a></li><li><a href="module-Estadisticas.html">Estadisticas</a></li><li><a href="module-FilePicker.html">FilePicker</a></li><li><a href="module-Galeria.html">Galeria</a></li><li><a href="module-HomePage.html">HomePage</a></li><li><a href="module-Landing.html">Landing</a></li><li><a href="module-Login.html">Login</a></li><li><a href="module-MainApp.html">MainApp</a></li><li><a href="module-PerfilPage.html">PerfilPage</a></li><li><a href="module-PopUpAmpliar.html">PopUpAmpliar</a></li><li><a href="module-PopUpAmpliarGaleria.html">PopUpAmpliarGaleria</a></li><li><a href="module-PopUpBody.html">PopUpBody</a></li><li><a href="module-PopUpCropper.html">PopUpCropper</a></li><li><a href="module-PopUpRegistrarse.html">PopUpRegistrarse</a></li><li><a href="module-PopUpResultados.html">PopUpResultados</a></li><li><a href="module-URLPicker.html">URLPicker</a></li></ul><h3>Global</h3><ul><li><a href="global.html#BuscadorPacientesPopUp">BuscadorPacientesPopUp</a></li><li><a href="global.html#InstruccionesPopup">InstruccionesPopup</a></li><li><a href="global.html#MyApp">MyApp</a></li><li><a href="global.html#NotFoundPage">NotFoundPage</a></li><li><a href="global.html#Tipos">Tipos</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Aug 07 2024 11:22:41 GMT+0200 (hora de verano de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

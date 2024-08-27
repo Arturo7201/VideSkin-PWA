@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/app.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/app.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect, useRef } from 'react';
+
+
+import { Light, Dark } from "../styles/Themes";
+import { ThemeProvider } from "styled-components";
+export const ThemeContext = React.createContext(null);
+
+
+import axios from 'axios';
+
+
+import {
+  f7,
+  f7ready,
+  App,
+  View
+} from 'framework7-react';
+
+
+import routes from '../js/routes';
+import store from '../js/store';
+import { userConfig } from '../js/config';
+
+// Framework7 Parameters
+const f7params = {
+  name: 'VideSkin', // App name
+    theme: 'auto', // Automatic theme detection
+    colors: {
+      primary: '#0099CC',
+    },
+ 
+    // App store
+    store: store,
+    // App routes
+    routes: routes,
+ 
+    // Register service worker (only on production build)
+    serviceWorker: process.env.NODE_ENV ==='production' ? {
+      path: '/service-worker.js',
+    } : {},
+};
+
+/**
+* Componente principal de la aplicación web.
+*
+* @component App
+* // Ejemplo de uso del componente App
+* const f7params = { theme: 'ios', name: 'My App' };
+* return &lt;App props={f7params} />
+* 
+* @param {object} f7params - Las propiedades pasadas al componente.
+*
+* @returns {JSX.Element} El componente renderizado de la página principal.
+*/
+
+
+const MyApp = () => {
+
+
+  
+  f7ready(() => {
+
+  });
+
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+
+  /**
+  * Comprueba si el usuario está autenticado mediante la validación del token almacenado en localStorage o sessionStorage.
+  *
+  * @async
+  * @method
+  * @returns {Promise&lt;boolean>} - Retorna una promesa que resuelve a `true` si el usuario está autenticado, de lo contrario `false`.
+  * @throws {Error} - Si ocurre un error durante la solicitud de autenticación.
+  */
+  async function isAuthenticated() {
+    
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`
+      }
+    };
+
+
+    try {
+      const response = await axios.get(`http://${userConfig.serverIP}:${userConfig.serverPort}/jwt`, config);
+      console.log(response.data.logged_in_as)
+      console.log(response.data.role)
+      return true;
+    } catch (error) {
+      return false;
+    }
+  }
+
+
+  /**
+  * Efecto que comprueba la autenticación del usuario al montar el componente.
+  * Navega a diferentes rutas basándose en el estado de autenticación y el tamaño de la ventana.
+  *
+  * @function
+  */
+  useEffect(() => {
+    async function checkAuthentication() {
+      try {
+        const authenticated = await isAuthenticated();
+       
+        if (authenticated) {
+          
+          if (window.innerWidth &lt;= 768){
+            
+            f7.views.main.router.navigate('/home/');
+
+          }else{
+            
+            f7.views.main.router.navigate('/mainApp/');
+
+          }
+        }else{
+          
+          f7.views.main.router.navigate('/');
+        }
+      } catch (error) {
+        console.error('Error al verificar la autenticación:', error);
+        // Manejar el error aquí si es necesario
+      }
+    }
+
+    checkAuthentication();
+  }, []);
+
+
+
+
+  const [theme, setTheme] = useState("light");
+  const themeStyle = theme === "light" ? Light : Dark;
+
+
+
+  //&lt;Navigation/>
+  return (
+    
+    &lt;App { ...f7params }>
+      &lt;ThemeContext.Provider value={{ setTheme, theme }}>
+        &lt;ThemeProvider theme={themeStyle}>
+          &lt;View main url="/">
+
+
+
+    
+
+          &lt;/View>
+        &lt;/ThemeProvider>
+      &lt;/ThemeContext.Provider>
+    &lt;/App>
+    
+  )
+}
+
+
+export default MyApp;
+export {f7, f7params};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Calendario.html">Calendario</a></li><li><a href="module-ChangePasswd.html">ChangePasswd</a></li><li><a href="module-CodeValidationPopup.html">CodeValidationPopup</a></li><li><a href="module-Contacto.html">Contacto</a></li><li><a href="module-Cribado.html">Cribado</a></li><li><a href="module-Estadisticas.html">Estadisticas</a></li><li><a href="module-FilePicker.html">FilePicker</a></li><li><a href="module-Galeria.html">Galeria</a></li><li><a href="module-HomePage.html">HomePage</a></li><li><a href="module-Landing.html">Landing</a></li><li><a href="module-Login.html">Login</a></li><li><a href="module-MainApp.html">MainApp</a></li><li><a href="module-PerfilPage.html">PerfilPage</a></li><li><a href="module-PopUpAmpliar.html">PopUpAmpliar</a></li><li><a href="module-PopUpAmpliarGaleria.html">PopUpAmpliarGaleria</a></li><li><a href="module-PopUpBody.html">PopUpBody</a></li><li><a href="module-PopUpCropper.html">PopUpCropper</a></li><li><a href="module-PopUpRegistrarse.html">PopUpRegistrarse</a></li><li><a href="module-PopUpResultados.html">PopUpResultados</a></li><li><a href="module-URLPicker.html">URLPicker</a></li></ul><h3>Global</h3><ul><li><a href="global.html#BuscadorPacientesPopUp">BuscadorPacientesPopUp</a></li><li><a href="global.html#InstruccionesPopup">InstruccionesPopup</a></li><li><a href="global.html#MyApp">MyApp</a></li><li><a href="global.html#NotFoundPage">NotFoundPage</a></li><li><a href="global.html#Tipos">Tipos</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Aug 07 2024 11:22:41 GMT+0200 (hora de verano de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

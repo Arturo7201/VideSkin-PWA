@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: components/buscador.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: components/buscador.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React from 'react';
+import { MdArrowBack } from 'react-icons/md';
+
+import {
+    f7,
+    Popup,
+    Subnavbar,
+    Searchbar,
+    List,
+    ListItem,
+    Button
+  } from 'framework7-react';
+
+
+/**
+* Interfaz de selección de paciente
+*
+* Este componente representa el PopUp para selecionar pacientes.
+* @method
+* @param {Boolean} showPopup 
+* @param {Function} closePopup 
+* @param {Object} pacientes 
+* @param {Function} setPaciente
+* @returns {JSX.Element} 
+* @name BuscadorPacientesPopUp
+*/
+const BuscadorPacientesPopUp = ({showPopup,closePopup,pacientes,setPaciente}) => {
+
+
+  const onSelectPaciente = (id) => {
+    setPaciente(id)
+  }
+
+  return (
+    &lt;Popup opened={showPopup} onClose={closePopup} closeByBackdropClick={false} style={{border: '1px solid teal'}}>
+      &lt;div>
+          &lt;div className="page" >
+
+            &lt;div className="navbar" style={{display: 'grid', gridTemplateColumns: '5% 1fr', background: 'teal', color: '#ffffff', textAlign: 'center', alignItems: 'center',  fontSize: '170%', lineHeight: '250%'}}>
+              &lt;MdArrowBack style={{ fontSize: '24px', marginLeft: '90%', cursor: 'pointer'}} onClick={closePopup}/>
+              &lt;span style={{ marginLeft: '10%', marginRight: '15%', textAlign: 'center'}}>Pacientes&lt;/span>
+            &lt;/div>
+            &lt;Subnavbar inner={false}>
+              &lt;Searchbar searchContainer=".search-list" searchIn=".item-title" />
+            &lt;/Subnavbar>
+
+            &lt;div className='page-content'>
+
+              &lt;List strongIos outlineIos dividersIos className="searchbar-not-found">
+                &lt;ListItem title="Nothing found" />
+              &lt;/List>
+              &lt;List strongIos outlineIos dividersIos className="search-list searchbar-found">
+
+              {pacientes &amp;&amp; pacientes.length > 0 ? (
+                    pacientes.map(paciente => (
+                    &lt;li key={paciente.id}>
+                        &lt;div className="item-content">
+                            &lt;div className="item-inner">
+                                &lt;div className="item-title">{paciente.name} {paciente.surname}&lt;/div>
+                                &lt;div className="item-after">{paciente.username}&lt;/div>
+                            &lt;/div>
+                            &lt;Button fill color='green' style={{margin:'2%', width:'20%'}}onClick={() => onSelectPaciente(paciente.id)}>Seleccionar&lt;/Button>
+
+                        &lt;/div>
+                    &lt;/li>
+                    ))
+                ) : (
+                    &lt;li>No se encontraron pacientes&lt;/li>
+                )}
+
+
+              &lt;/List>
+            &lt;/div>
+
+          &lt;/div>
+      &lt;/div>  
+
+    &lt;/Popup>
+  );
+};
+
+export default BuscadorPacientesPopUp;</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-Calendario.html">Calendario</a></li><li><a href="module-ChangePasswd.html">ChangePasswd</a></li><li><a href="module-CodeValidationPopup.html">CodeValidationPopup</a></li><li><a href="module-Contacto.html">Contacto</a></li><li><a href="module-Cribado.html">Cribado</a></li><li><a href="module-Estadisticas.html">Estadisticas</a></li><li><a href="module-FilePicker.html">FilePicker</a></li><li><a href="module-Galeria.html">Galeria</a></li><li><a href="module-HomePage.html">HomePage</a></li><li><a href="module-Landing.html">Landing</a></li><li><a href="module-Login.html">Login</a></li><li><a href="module-MainApp.html">MainApp</a></li><li><a href="module-PerfilPage.html">PerfilPage</a></li><li><a href="module-PopUpAmpliar.html">PopUpAmpliar</a></li><li><a href="module-PopUpAmpliarGaleria.html">PopUpAmpliarGaleria</a></li><li><a href="module-PopUpBody.html">PopUpBody</a></li><li><a href="module-PopUpCropper.html">PopUpCropper</a></li><li><a href="module-PopUpRegistrarse.html">PopUpRegistrarse</a></li><li><a href="module-PopUpResultados.html">PopUpResultados</a></li><li><a href="module-URLPicker.html">URLPicker</a></li></ul><h3>Global</h3><ul><li><a href="global.html#BuscadorPacientesPopUp">BuscadorPacientesPopUp</a></li><li><a href="global.html#InstruccionesPopup">InstruccionesPopup</a></li><li><a href="global.html#MyApp">MyApp</a></li><li><a href="global.html#NotFoundPage">NotFoundPage</a></li><li><a href="global.html#Tipos">Tipos</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Wed Aug 07 2024 11:22:41 GMT+0200 (hora de verano de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

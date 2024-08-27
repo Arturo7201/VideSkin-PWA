@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: home.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: home.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import React, { useState, useEffect, useRef } from 'react';
+
+
+import styled from "styled-components";
+import { MdImageSearch} from "react-icons/md";
+import { MdHistory } from "react-icons/md";
+import { TbRulerMeasure } from "react-icons/tb";
+import { MdArrowBack } from 'react-icons/md';
+import { PiCubeFocusDuotone } from "react-icons/pi";
+import { AiOutlineAim } from "react-icons/ai";
+import { FaRegHourglassHalf } from "react-icons/fa6";
+import { IoPersonCircleSharp } from "react-icons/io5";
+import { GiHealthNormal } from "react-icons/gi";
+import { FaSun } from "react-icons/fa";
+import { IoMenu } from "react-icons/io5";
+import { FaArrowLeft } from "react-icons/fa";
+
+
+
+import { CgDanger } from "react-icons/cg";
+import { PiWarningFill } from "react-icons/pi";
+import { MdHealthAndSafety } from "react-icons/md";
+
+
+
+
+import URLPicker from '../components/url-piker';
+import BodyPopup from '../components/popUp-body';
+import AmpliarPopUp from '../components/popup-ampliar'
+import InstruccionesPopup from '../components/popUp-instrucciones';
+import ResultPopUp from '../components/popup-result';
+
+
+import Lunar from '../components/popOver-lunar';
+
+import { CircularProgressbar, buildStyles } from 'react-circular-progressbar';
+
+import 'react-circular-progressbar/dist/styles.css';
+
+import { FaLocationCrosshairs } from "react-icons/fa6";
+
+import Swal from 'sweetalert2';
+
+
+import axios from 'axios';
+import { userConfig } from '../js/config';
+
+import {
+  f7,
+  Navbar,
+  NavTitle,
+  Icon,
+  Popup,
+  Link,
+  CardContent,
+  CardHeader,
+  List,
+  Progressbar,
+  Panel,
+  Popover,
+  ListItem,
+  Button
+} from 'framework7-react';
+
+/**
+* @module HomePage
+*/
+
+/**
+ * HomePage Component
+ *
+ * Este componente representa la página principal de la aplicación.
+ * Contiene lógica para detectar si la pantalla es móvil y ajustar el estado en consecuencia.
+ *
+ * @returns {JSX.Element} El componente renderizado de la página principal.
+ */
+
+export function HomePage () {
+
+
+  //#region ------ RESPONSIVE RENDER ---------------------------------------------------------------------------------------------------------------------------------------------------
+
+  const [isMobile, setIsMobile] = useState(false);
+  const [isMobile2, setIsMobile2] = useState(window.innerWidth &lt;= 768); ;
+
+   /**
+   * Efecto que verifica si la pantalla es lo suficientemente estrecha
+   * y ajusta el estado `isMobile` en consecuencia. También agrega un listener
+   * para el evento `resize` que vuelve a verificar el tamaño de la pantalla
+   * cada vez que la ventana se redimensiona.
+   *
+   * @method
+   * @returns {boolean} 
+   * @memberof module:HomePage
+   * @name useEffect
+   */
+  useEffect(() => { 
+    // Función para comprobar si la pantalla es lo suficientemente estrecha 
+    const checkIfMobile = () => {
+        const containerWidth = document.getElementById('container').offsetWidth;
+        setIsMobile(containerWidth &lt;= 800); // Ajusta este valor 
+    };
+
+    // Llama a la función de comprobación cuando se carga la página y cada vez que se redimensiona la ventana
+    checkIfMobile();
+    window.addEventListener('resize', checkIfMobile);
+
+    // Limpia el event listener al desmontar el componente para evitar fugas de memoria
+    return () => {
+        window.removeEventListener('resize', checkIfMobile);
+    };
+  }, []);
+
+  
+  /**
+  * Efecto que verifica si se ha cambiado e tamaño lo suficiente como para recargar 
+  * la aplicación en modo smartphone o escritorio.
+  *
+  * @method
+  * @param {boolean} isMobile2
+  * @returns {boolean} 
+  * @memberof module:HomePage
+  * @name useEffect
+  */
+  useEffect(() => {
+    const handleResize = () => {
+      const currentlyMobile = (window.innerWidth &lt;= 768);
+      if (currentlyMobile !== isMobile2) {
+        setIsMobile2(currentlyMobile);
+        console.log("Reload due to device change");
+        window.location.reload();
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [isMobile2]);
+
+  //#endregion
+
+  //#region ------ PANEL                ------------------------------------------------------------------------
+
+  /**
+  * Logica de  control del panel desplegable en modo smartphone.
+  *
+  */
+  const handleMenu = () => {
+    f7.panel.open('#home');
+  }
+
+
+  const handleGoHome = () => {
+    f7.views.main.router.navigate("/home/");
+  }
+
+  const handleGoAnalizar = () => {
+    f7.views.main.router.navigate("/analizar/");
+  }
+
+  const handleGoGaleria = () => {
+    f7.views.main.router.navigate("/galeria/");
+  }
+
+  const handleGoCalendario = () => {
+    f7.views.main.router.navigate("/calendario/");
+  }
+
+  const handleGoStats = () => {
+    f7.views.main.router.navigate("/stats/");
+  }
+
+  const handleGoSettings = () => {
+    f7.views.main.router.navigate("/settings/");
+  }
+
+  const LogOutDialog = () => {
+    f7.dialog.confirm('¿Estas seguro de que deseas salir?', () => {
+      localStorage.removeItem('token');
+      sessionStorage.removeItem('token')
+      f7.dialog.progress('Saliendo...');
+      setTimeout(() => {
+        f7.dialog.close();
+      }, 3000)
+      window.location.reload();
+    });
+  };
+
+  //#endregion
+
+  const [currentImage, setCurrentImage] = useState('/images/BODY1.png');
+  const [user, setUser] = useState(null);
+  const [renderizado, setRenderizado] = useState(false);
+  const [showPopupBody, setShowPopupBody] = useState(false);
+
+  //#region ----- TIPOS -----------------------------------------------------------------------------------------
+  /**
+  * Logica de renderizado para la vista de los tipos de lesiones
+  */
+
+  const [tipos, setTipos] = useState(false)
+  
+  const [isMobileT, setIsMobileT] = useState(false);
+  const [isMobileT2, setIsMobileT2] = useState(false);
+  const [isMobile3, setIsMobile3] = useState(false);
+
+  useEffect(() => { 
+    // Función para comprobar si la pantalla es lo suficientemente estrecha 
+    const checkIfMobileT = () => {
+        const containerWidth = document.getElementById('container').offsetWidth;
+        setIsMobileT(containerWidth &lt;= 1170); // Ajusta este valor 
+    };
+    const checkIfMobileT2 = () => {
+        const containerWidth = document.getElementById('container').offsetWidth;
+        setIsMobileT2(containerWidth &lt;= 550); // Ajusta este valor 
+    };
+    const checkIfMobile3 = () => {
+        const containerWidth = document.getElementById('container').offsetWidth;
+        console.log(containerWidth)
+        setIsMobile3(containerWidth &lt;= 1400); // Ajusta este valor 
+    };
+
+    // Llama a la función de comprobación cuando se carga la página y cada vez que se redimensiona la ventana
+    checkIfMobileT();
+    checkIfMobileT2();
+    checkIfMobile3();
+    window.addEventListener('resize', checkIfMobileT);
+    window.addEventListener('resize', checkIfMobileT2);
+    window.addEventListener('resize', checkIfMobile3);
+
+    // Limpia el event listener al desmontar el componente para evitar fugas de memoria
+    return () => {
+        window.removeEventListener('resize', checkIfMobileT);
+        window.removeEventListener('resize', checkIfMobileT2);
+        window.removeEventListener('resize', checkIfMobile3);
+    };
+  }, []);
+
+  const handleTipos = () => {
+    setTipos(true)
+  }
+
+  const handleBack = () => {
+    setTipos(false)
+  }
+
+  //#endregion
+
+  //#region ------- AUTENTICACION ------------------------------------------------------
+  /**
+  * Token de autenticación.
+  * @const {string} token 
+  */
+  const token = localStorage.getItem('token') || sessionStorage.getItem('token');
+  
+  /**
+  * Configuración para las solicitudes HTTP que requieren autenticación.
+  * @const {object} config
+  * @property {object} headers - Cabeceras de la solicitud HTTP.
+  * @property {string} headers.Authorization - Cabecera de autorización con el token.
+  */  
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  };
+
+  /**
+   * Comprueba si el usuario está autenticado mediante la validación del token almacenado en localStorage o sessionStorage.
+   *
+   * @async
+   * @method
+   * @returns {Promise&lt;boolean>} - Retorna una promesa que resuelve a `true` si el usuario está autenticado, de lo contrario `false`.
+   * @throws {Error} - Si ocurre un error durante la solicitud de autenticación.
+   * @memberof module:HomePage
+   */
+
+  async function isAuthenticated() {
+    
+     try {
+      const response = await axios.get(`http://${userConfig.serverIP}:${userConfig.serverPort}/jwt`, config);
+
+      console.log(response.data.logged_in_as);
+      setUser(response.data.logged_in_as)
+      return true;
+
+    } catch (error) {
+
+      console.log(error.response.data.msg);
+      return false;
+
+    }
+  }
+
+  /**
+  * Efecto que verifica si el cliente esta autenticado y carga toda la información dinamica
+  * de la pantalla.
+  *
+  * @method
+  * @memberof module:HomePage
+  * @name useEffect
+  */
+  useEffect(() => {
+    async function checkAuthentication() {
+      try {
+
+        const authenticated = await isAuthenticated();
+
+        if (authenticated) {
+          f7.dialog.progress();
+          await fetchPerfil();
+          await uvaCoordenadas()
+          await obtenerMarkers();
+          setRenderizado(true)
+          f7.dialog.close();
+        } else {
+          console.log('NO AUTENTICADO');
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "La sesión ha caducado"
+          })
+          setRenderizado(false)
+          window.location.reload();
+        }
+      } catch (error) {
+        console.error('Error al cargar el componente:', error);
+      }
+    }
+
+    if (!renderizado){
+      //console.log(renderizado)
+      checkAuthentication();
+      setRenderizado(true)
+    }
+  }, []);
+
+  //#endregion
+
+  //#region   ---- FUNCIONES BLOQUE PERFIL ------------------------------------------------------
+  const [perfilImage, setPerfilImage] = useState(null);
+  /**
+  * Comprueba si el usuario está autenticado mediante la validación del token almacenado en localStorage o sessionStorage.
+  *
+  * @async
+  * @method
+  * @returns {Promise&lt;{perfilImage: string | null}>} - Retorna una promesa que resuelve a `true` si el usuario está autenticado, de lo contrario `false`.
+  * @throws {Error} - Si ocurre un error durante la solicitud de autenticación.
+  * @memberof module:HomePage
+  */
+  async function fetchPerfil() {
+    try {
+
+      const response = await axios.get(`http://${userConfig.serverIP}:${userConfig.serverPort}/perfilImage`, config);
+      setPerfilImage(response.data.imagen);
+        
+    } catch (error) {
+      try{
+        if (error.response.status == 401){
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "La sesión ha caducado"
+          })
+          window.location.reload();
+
+        }else{
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: error.response.data.error
+          })
+        }
+      }catch{
+        console.error(error.message)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: error.message
+        })
+      }
+    }
+  }
+  //#endregion
+
+  //#region   ---- FUNCIONES BLOQUE UVA ------------------------------------------------------
+  const [ciudad, setCiudad] = useState(null)
+  const [pais, setPais] = useState(null)
+  const [uvIndex, setUVIndex] = useState(null)
+  const [uvText, setUVText] = useState(null)
+
+
+  /**
+  * Funcion para solicitar la geolocalizacion al cliente. Devuelve las coordenadas alt. y lat.
+  *
+  * @async
+  * @method
+  * @returns {String} 
+  * @throws {Error}
+  * @memberof module:HomePage
+
+  */
+  async function uvaCoordenadas() {
+
+    if ("geolocation" in navigator) {
+      // El navegador admite la geolocalización
+      navigator.geolocation.getCurrentPosition(function(position) {
+        // Obtiene la posición actual del usuario
+        var latitude = position.coords.latitude;
+        var longitude = position.coords.longitude;
+    
+        //console.log("Latitud:", latitude);
+        //console.log("Longitud:", longitude);
+        uvaAPI(latitude,longitude)
+
+      }, function(error) {
+        // Maneja errores de geolocalización
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            console.error("El usuario ha denegado la solicitud de geolocalización.");
+            break;
+          case error.POSITION_UNAVAILABLE:
+            console.error("La información de ubicación no está disponible.");
+            break;
+          case error.TIMEOUT:
+            console.error("La solicitud para obtener la ubicación del usuario ha excedido el tiempo límite.");
+            break;
+          case error.UNKNOWN_ERROR:
+            console.error("Se ha producido un error desconocido.");
+            break;
+        }
+      });
+    } else {
+      // El navegador no admite la geolocalización
+      console.error("Geolocalización no compatible en este navegador.");
+    }
+
+  }
+
+  /**
+  * Solicita a la API AccuWeather la key de localización con las coordenadas.
+  * @method
+  * @param {String} latitude 
+  * @param {String} longitude 
+  * @returns {String} - Retorna una promesa que resuelve a `true` si el usuario está autenticado, de lo contrario `false`.
+  * @memberof module:HomePage
+  */
+  async function uvaAPI(latitude,longitude) {
+    try {
+
+      const response = await axios.get(`http://dataservice.accuweather.com/locations/v1/cities/geoposition/search?apikey=${userConfig.apiKey}&amp;q=${latitude}%2C${longitude}&amp;language=es`);
+
+
+      setCiudad(response.data.LocalizedName)
+      setPais(response.data.Country.LocalizedName)
+
+      const responseUva = await axios.get(`http://dataservice.accuweather.com/currentconditions/v1/${response.data.Key}?apikey=${userConfig.apiKey}&amp;language=es&amp;details=true`);
+
+
+      setUVIndex(responseUva.data[0].UVIndex)
+      setUVText(responseUva.data[0].UVIndex)
+
+
+    } catch (error) {
+      try{
+        if (error.response.status == 404){
+          return
+        }
+        if (error.response.status == 401){
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "La sesión ha caducado"
+          })
+          window.location.reload();
+
+        }else{
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: error.response.data.error
+          })
+        }
+      }catch{
+        console.error(error.message)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: error.message
+        })
+      }
+    }
+  }
+
+  /**
+  * Renderizar barra de riesgo UV
+  *
+  * @method
+  * @param {String} risk 
+  * @returns {JSX.Element}
+  * @memberof module:HomePage
+  */  
+  const renderRiskBar = (risk) =>{
+    if (risk &lt; 2) {
+      return (
+        &lt;div>
+          &lt;Progressbar color="green" progress={((risk*100)/11)}
+          style={{
+            width: '95%', // Cambia el ancho de la barra de progreso
+            height: '20px', // Ajusta la altura de la barra de progreso
+            margin: '0 5px',
+            borderRadius: '6px', // Define el radio de borde para hacer la barra de progreso más redondeada
+            backgroundColor: 'white', // Cambia el color de fondo de la barra de progreso
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' // Agrega sombra para mejorar la apariencia
+          }} /> 
+        &lt;/div>
+      );
+    } else if (risk > 7) {
+      return (
+        &lt;Progressbar color="pink" progress={((risk*100)/11)}
+        style={{
+          width: '95%', // Cambia el ancho de la barra de progreso
+          height: '20px', // Ajusta la altura de la barra de progreso
+          margin: '0 5px',
+          borderRadius: '6px', // Define el radio de borde para hacer la barra de progreso más redondeada
+          backgroundColor: 'white', // Cambia el color de fondo de la barra de progreso
+          boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' // Agrega sombra para mejorar la apariencia
+        }} />
+      );
+    } else {
+      return (
+        &lt;div>
+        &lt;Progressbar color='orange' progress={((risk*100)/11)} 
+          style={{
+            width: '95%', // Cambia el ancho de la barra de progreso
+            height: '20px', // Ajusta la altura de la barra de progreso
+            margin: '0 5px',
+            borderRadius: '6px', // Define el radio de borde para hacer la barra de progreso más redondeada
+            backgroundColor: 'white', // Cambia el color de fondo de la barra de progreso
+            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)' // Agrega sombra para mejorar la apariencia
+          }} />
+      &lt;/div>
+      );
+    }
+  }
+
+  //#endregion
+
+  //#region ------- FUNCIONES BLOQUE MARKERS ------------------------------------------------------
+  const [markers, setMarkers] = useState([])
+  const [showPopupAmpliar, setShowPopupAmpliar] = useState(false);
+  const [marker, setMarker] = useState(null);
+
+  /**
+  * Solicita a la API loa marcadores de las lesiones.
+  *
+  * @async
+  * @method
+  * @returns {Promise&lt;{markers: Object | null}>} - Retorna una promesa que resuelve a `true` si el usuario está autenticado, de lo contrario `false`.
+  * @throws {Error} - Si ocurre un error durante la solicitud de autenticación.
+  * @memberof module:HomePage
+  */
+  async function obtenerMarkers() {
+
+    try {
+
+      const response = await axios.get(`http://${userConfig.serverIP}:${userConfig.serverPort}/markers`, config);
+      //console.log(response.data.markers)
+      const newMarkers = response.data.markers.map(marker => ({
+        id: marker.id,
+        x: marker.x,
+        y: marker.y,
+        body: marker.body,
+        probabilidad: marker.probabilidad,
+        predicciones: marker.predicciones,
+        imagen: marker.imagen,
+        color: marker.color,
+        opened: false
+      }));
+      console.log(newMarkers)
+      setMarkers([...markers, ...newMarkers]);
+
+    } catch (error) {
+      try{
+        if (error.response.status == 404){
+          return
+        }
+        if (error.response.status == 401){
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "La sesión ha caducado"
+          })
+          window.location.reload();
+
+        }else{
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: error.response.data.error
+          })
+        }
+      }catch{
+        console.error(error.message)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: error.message
+        })
+      }
+    }
+  };
+
+  /**
+  * Solicita a la API AccuWeather la key de localización con las coordenadas.
+  *
+  * @async
+  * @method
+  * @param {Object} marker 
+  * @returns {Promise&lt;{markers: Object}>} - Retorna una promesa que resuelve a `true` si el usuario está autenticado, de lo contrario `false`.
+  * @throws {Error} - Si ocurre un error durante la solicitud de autenticación.
+  * @memberof module:HomePage
+  */
+  async function handleBorrarMarker(marker) {
+    console.log(marker)
+    try {
+      const response = await axios.post(`http://${userConfig.serverIP}:${userConfig.serverPort}/deleteMarker`, {id: marker.id}, config);
+      Swal.fire({
+        icon: 'success',
+        text: response.data.mesage
+      })
+
+      // Eliminar el marcador de la lista markers
+      const updatedMarkers = markers.filter(m => m.id !== marker.id);
+      setMarkers(updatedMarkers);
+
+    } catch (error) {
+      try{
+        if (error.response.status == 404){
+          return
+        }
+        if (error.response.status == 401){
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: "La sesión ha caducado"
+          })
+          window.location.reload();
+
+        }else{
+          Swal.fire({
+            icon: 'error',
+            title: 'Oops...',
+            text: error.response.data.error
+          })
+        }
+      }catch{
+        console.error(error.message)
+        Swal.fire({
+          icon: 'error',
+          title: 'Oops...',
+          text: error.message
+        })
+      }
+    }
+  }
+
+  // CAMBIAR A IMAGEN DELANTERA
+  const handleCambiarDelante = () => {
+    setCurrentImage('/images/BODY1.png');
+  };
+  
+  // CAMBIAR A IMAGEN TRASERA
+  const handleCambiarDetras = () => {
+    setCurrentImage('/images/BODY2.png');
+  };
+
+  // ABRIR POPUP-BODY
+  const handleNewLesion = () => {
+    setShowPopupBody(true);
+  };
+
+  // CERRAR POPUP-BODY
+  const closePopupBody = () => {
+    obtenerMarkers()
+    setShowPopupBody(false)
+  };
+
+  //ABRIR POPOVER
+  const handleClickMarker = (marker) => {
+    marker.opened = true
+    const updatedMarkers = [...markers];
+    setMarkers(updatedMarkers);
+  }
+
+  //AMPLIAR RESULTADO
+  const handleAmpliar = (marker) => {
+    marker.opened = false
+    const updatedMarkers = [...markers];
+    setMarkers(updatedMarkers);
+    setMarker(marker)
+    setShowPopupAmpliar(true)
+  }
+
+  //CERRAR RESULTADO
+  const closePopupAmpliar = () => {
+    setShowPopupAmpliar(false)
+  }
+
+
+  //#endregion
+
+  //#region ------------------------ ACTUALIZAR MARKER ---------------------------------------------------------------------------------------------------------------------
+  const [instruccionesPopUp, setInstruccionesPopUp] = useState(false)
+  const closeInstruccionesPopUp = () =>{
+    setInstruccionesPopUp(false)
+  }
+
+  const handleActualizar = () => {
+    closePopupAmpliar()
+    setInstruccionesPopUp(true)
+
+  }
+  
+  const [imagen, setImagen] = useState(null)
+  const [fileSelected, setFileSelected] = useState(false);
+  const [resultPopUp, setResultPopUp] = useState(false)
+  const [analizar, setAnalizar] = useState(false)
+  const [analizado, setAnalizado] = useState(false)
+
+  const closeResultPopUp = () => {
+    setResultPopUp(false)
+    setAnalizar(false)
+    setAnalizado(false)
+  }
+
+  const handleAnalizar = () => {
+    closeInstruccionesPopUp()
+    setResultPopUp(true)
+    setAnalizar(true)
+  }
+
+  const handleCerrar = (newMarker) => {
+    //
+    //setMarker(prevMarker => ({ ...prevMarker })); // Cambio en setMarker para activar el useEffect
+    console.log(marker)
+    console.log(newMarker)
+    console.log(newMarker.id,newMarkers(markers,newMarker))
+    setMarkers(newMarkers(markers,newMarker))
+    //setImagen(null)
+    setFileSelected(false)
+    closeResultPopUp()
+    //setShowPopupAmpliar(true)
+  }
+
+  const newMarkers = (prevMarkers, marker) => {
+    return prevMarkers.map(m =>
+      m.id === marker.id ? marker : m
+    );
+  };
+
+
+  
+  //#endregion
+
+
+  return(
+
+    &lt;div >
+
+      { tipos ? (
+        &lt;div class="page" style={{backgroundColor: '#EFEFF4'}}>
+
+            &lt;div className="navbar" style={{display: 'grid', gridTemplateColumns: '5% 1fr', background: 'teal', color: '#ffffff', textAlign: 'center', alignItems: 'center',  fontSize: '170%', lineHeight: '250%'}}>
+            &lt;MdArrowBack style={{ fontSize: '24px', marginLeft: '90%', cursor: 'pointer'}} onClick={handleBack}/>
+            &lt;span style={{ marginLeft: '10%', marginRight: '15%', textAlign: 'center'}}>Tipos de lesiones&lt;/span>
+            &lt;/div>
+
+            &lt;div class="page-content" id='container'>
+
+                {isMobileT ? (
+
+                    &lt;Container>
+                        &lt;div className='sec-1'>
+                            Lesiones malignas
+                        &lt;/div>
+                        
+
+                        &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #ac3939'}}>
+                            &lt;CardHeader style={{padding: '10px'}}>
+                                &lt;img className="tipo" src="../images/1.jpg"/>
+                                &lt;div className={isMobileT ? 'tipo-tittle1-mobile' : 'tipo-tittle1'} >Melanoma&lt;/div>
+                            &lt;/CardHeader>
+                            &lt;CardContent>
+                                {isMobileT2 ? (
+                                    &lt;div className="tipo-subtittle1-mobile">
+                                        &lt;div className="first-line">
+                                            &lt;CgDanger style={{fontSize: '20px', color: 'red'}}/>
+                                            &lt;div>
+                                                Riesgo &lt;span  className='alto'> ALTO&lt;/span > :
+                                            &lt;/div>
+                                        &lt;/div>
+                                        &lt;p className="second-line"> Cáncer de piel&lt;/p>
+                                    
+                                    &lt;/div>
+                                ):(
+                                    &lt;p className="tipo-subtittle1">&lt;CgDanger style={{ width: '10%', fontSize: '20px', color: 'red' }}/>Riesgo &lt;p className='alto'> ALTO&lt;/p>: Cáncer de piel&lt;/p>
+
+                                )}
+                                &lt;p className='text-body'>
+                                El melanoma es un tipo de cáncer de piel altamente agresivo que se desarrolla a partir de los melanocitos, las células que producen el pigmento melanina. Se caracteriza por un crecimiento anormal de lunares o manchas en la piel que pueden volverse irregulares en forma y color, y pueden aparecer en cualquier parte del cuerpo.
+                                &lt;/p>
+                            &lt;/CardContent>
+                        &lt;/div>
+
+                        &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #ac3939'}}>
+                            &lt;CardHeader style={{padding: '10px'}}>
+                                &lt;img className="tipo" src="../images/1.jpg"/>
+                                &lt;div className={isMobileT ? 'tipo-tittle1-mobile' : 'tipo-tittle1'}>Carcinoma Basocelular&lt;/div>
+                            &lt;/CardHeader>
+                            &lt;CardContent>
+                                {isMobileT2 ? (
+                                        &lt;div className="tipo-subtittle1-mobile">
+                                            &lt;div className="first-line">
+                                                &lt;CgDanger style={{fontSize: '20px', color: 'red'}}/>
+                                                &lt;div>
+                                                    Riesgo &lt;span  className='alto'> ALTO&lt;/span > :
+                                                &lt;/div>
+                                            &lt;/div>
+                                            &lt;p className="second-line"> Cáncer de piel&lt;/p>
+                                        
+                                        &lt;/div>
+                                    ):(
+                                        &lt;p className="tipo-subtittle1">&lt;CgDanger style={{ width: '10%', fontSize: '20px', color: 'red' }}/>Riesgo &lt;p className='alto'> ALTO&lt;/p>: Cáncer de piel&lt;/p>
+
+                                )}
+                                &lt;p className='text-body'>
+                                El carcinoma basocelular es el tipo más común de cáncer de piel. A menudo se presenta como una pequeña protuberancia o bulto en la piel que puede ser de color rosa, rojo, blanco o translúcido. Si bien rara vez se disemina a otras partes del cuerpo, puede causar daño localizado si no se trata.                            &lt;/p>
+                            &lt;/CardContent>
+                        &lt;/div>
+
+                        &lt;div className='sec-2'>
+                            Lesiones potencialmente malignas
+                        &lt;/div>
+
+                        &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #ffc34d'}}>
+                            &lt;CardHeader style={{padding: '10px'}}>
+                                &lt;img className="tipo" src="../images/1.jpg"/>
+                                &lt;div className={isMobileT ? 'tipo-tittle2-mobile' : 'tipo-tittle2'} >Nevus&lt;/div>
+                            &lt;/CardHeader>
+                            &lt;CardContent>
+                                {isMobileT2 ? (
+                                        &lt;div className="tipo-subtittle2-mobile">
+                                            &lt;div className="first-line">
+                                                &lt;PiWarningFill style={{fontSize: '20px', color: 'orange'}}/>
+                                                &lt;div>
+                                                    Riesgo &lt;span  className='medio'> POTENCIAL&lt;/span > :
+                                                &lt;/div>
+                                            &lt;/div>
+                                            &lt;p className="second-line"> Lunar&lt;/p>
+                                        
+                                        &lt;/div>
+                                    ):(
+                                        &lt;p className="tipo-subtittle2">&lt;PiWarningFill style={{ width: '10%', fontSize: '20px', color: 'orange' }}/>Riesgo &lt;p className='medio'> POTECIAL&lt;/p>: Lunar&lt;/p>
+
+                                )}
+                                &lt;p className='text-body'>
+                                Los nevus, comúnmente conocidos como lunares, son crecimientos pigmentados en la piel que pueden variar en tamaño, forma y color. La mayoría de los nevus son benignos, pero algunos pueden transformarse en melanoma, especialmente si experimentan cambios en el tamaño, forma o color con el tiempo.                            &lt;/p>
+                            &lt;/CardContent>
+                        &lt;/div>
+
+                        &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #ffc34d'}}>
+                            &lt;CardHeader style={{padding: '10px'}}>
+                                &lt;img className="tipo" src="../images/1.jpg"/>
+                                &lt;div className={isMobileT ? 'tipo-tittle2-mobile' : 'tipo-tittle2'} >Queratosis Actínica&lt;/div>
+                            &lt;/CardHeader>
+                            &lt;CardContent>
+                                {isMobileT2 ? (
+                                        &lt;div className="tipo-subtittle2-mobile">
+                                            &lt;div className="first-line">
+                                                &lt;PiWarningFill style={{fontSize: '20px', color: 'orange'}}/>
+                                                &lt;div>
+                                                    Riesgo &lt;span  className='medio'> POTENCIAL&lt;/span > :
+                                                &lt;/div>
+                                            &lt;/div>
+                                            &lt;p className="second-line"> Lesión precancerosa&lt;/p>
+                                        
+                                        &lt;/div>
+                                    ):(
+                                        &lt;p className="tipo-subtittle2">&lt;PiWarningFill style={{ width: '10%', fontSize: '20px', color: 'orange' }}/>Riesgo &lt;p className='medio'> POTECIAL&lt;/p>: Lesión precancerosa&lt;/p>
+
+                                )}
+                                &lt;p className='text-body'>
+                                La queratosis actínica, también conocida como queratosis solar, es una lesión precancerosa causada por la exposición crónica a la radiación ultravioleta del sol. Se manifiesta como manchas rojas, ásperas y escamosas en la piel que pueden volverse sensibles o dolorosas.                            &lt;/p>
+                            &lt;/CardContent>
+                        &lt;/div>
+
+                        &lt;div className='sec-3'>
+                            Lesiones benignas
+                        &lt;/div>
+
+                        &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                            &lt;CardHeader style={{padding: '10px'}}>
+                                &lt;img className="tipo" src="../images/1.jpg"/>
+                                &lt;div className={isMobileT ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Queratosis Seborreica&lt;/div>
+                            &lt;/CardHeader>
+                            &lt;CardContent>
+                                {isMobileT2 ? (
+                                        &lt;div className="tipo-subtittle3-mobile">
+                                            &lt;div className="first-line">
+                                                &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                &lt;div>
+                                                    &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                &lt;/div>
+                                            &lt;/div>
+                                            &lt;p className="second-line"> Mancha de edad&lt;/p>
+                                        
+                                        &lt;/div>
+                                    ):(
+                                        &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Mancha de edad&lt;/p>
+
+                                )}
+                                &lt;p className='text-body'>
+                                Las queratosis seborreicas, también llamadas verrugas seborreicas o manchas de la edad, son crecimientos cutáneos benignos que generalmente aparecen en áreas de la piel expuestas al sol. A menudo son de color marrón oscuro o negro y tienen una textura cerosa o escamosa.                            &lt;/p>
+                            &lt;/CardContent>
+                        &lt;/div>
+
+                        &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                            &lt;CardHeader style={{padding: '10px'}}>
+                                &lt;img className="tipo" src="../images/1.jpg"/>
+                                &lt;div className={isMobileT ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Dermatofibroma&lt;/div>
+                            &lt;/CardHeader>
+                            &lt;CardContent>
+                            {isMobileT2 ? (
+                                        &lt;div className="tipo-subtittle3-mobile">
+                                            &lt;div className="first-line">
+                                                &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                &lt;div>
+                                                    &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                &lt;/div>
+                                            &lt;/div>
+                                            &lt;p className="second-line"> Lesión benigna&lt;/p>
+                                        
+                                        &lt;/div>
+                                    ):(
+                                        &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Lesión benigna&lt;/p>
+
+                                )}
+                                &lt;p className='text-body'>
+                                El dermatofibroma es una lesión cutánea benigna que se desarrolla a partir de células fibroblásticas en la dermis de la piel. Por lo general, aparece como un pequeño bulto duro de color marrón o rosa que puede tener una apariencia ligeramente elevada. Aunque son inofensivos, a veces pueden confundirse con melanoma debido a su apariencia.                            &lt;/p>
+                            &lt;/CardContent>
+                        &lt;/div>
+
+                        &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                            &lt;CardHeader style={{padding: '10px'}}>
+                                &lt;img className="tipo" src="../images/1.jpg"/>
+                                &lt;div className={isMobileT ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Lesiones Vasculares&lt;/div>
+                            &lt;/CardHeader>
+                            &lt;CardContent>
+                            {isMobileT2 ? (
+                                        &lt;div className="tipo-subtittle3-mobile">
+                                            &lt;div className="first-line">
+                                                &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                &lt;div>
+                                                    &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                &lt;/div>
+                                            &lt;/div>
+                                            &lt;p className="second-line"> Lesión benigna&lt;/p>
+                                        
+                                        &lt;/div>
+                                    ):(
+                                        &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Lesión benigna&lt;/p>
+
+                                )}
+                                &lt;p className='text-body'>
+                                Las lesiones vasculares son problemas en los vasos sanguíneos de la piel. Incluyen hemangiomas (manchas rojas en bebés), malformaciones vasculares y telangiectasias (pequeñas venas visibles). Estas lesiones pueden ser de nacimiento o desarrollarse con el tiempo. En términos cancerígenos son inofensivas, aunque pueden necesitar tratamiento si afectan la apariencia o la función.                            &lt;/p>
+                            &lt;/CardContent>
+                        &lt;/div>
+
+
+
+
+
+                        
+                    &lt;/Container>
+
+                ):(
+                    &lt;Container>
+
+                        &lt;div className='sec-1'>
+                            Lesiones malignas
+                        &lt;/div>
+
+                        &lt;div style={{display: 'grid', gridTemplateColumns: '45% 45%', gap: '10%'}}>
+                            &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #ac3939'}}>
+                                &lt;CardHeader style={{padding: '10px'}}>
+                                    &lt;img className="tipo" src="../images/1.jpg"/>
+                                    &lt;div className={isMobileT ? 'tipo-tittle1-mobile' : 'tipo-tittle1'} >Melanoma&lt;/div>
+                                &lt;/CardHeader>
+                                &lt;CardContent>
+                                    {isMobileT2 ? (
+                                        &lt;div className="tipo-subtittle1-mobile">
+                                            &lt;div className="first-line">
+                                                &lt;CgDanger style={{fontSize: '20px', color: 'red'}}/>
+                                                &lt;div>
+                                                    Riesgo &lt;span  className='alto'> ALTO&lt;/span > :
+                                                &lt;/div>
+                                            &lt;/div>
+                                            &lt;p className="second-line"> Cáncer de piel&lt;/p>
+                                        
+                                        &lt;/div>
+                                    ):(
+                                        &lt;p className="tipo-subtittle1">&lt;CgDanger style={{ width: '10%', fontSize: '20px', color: 'red' }}/>Riesgo &lt;p className='alto'> ALTO&lt;/p>: Cáncer de piel&lt;/p>
+
+                                    )}
+                                    &lt;p className='text-body'>
+                                    El melanoma es un tipo de cáncer de piel altamente agresivo que se desarrolla a partir de los melanocitos, las células que producen el pigmento melanina. Se caracteriza por un crecimiento anormal de lunares o manchas en la piel que pueden volverse irregulares en forma y color, y pueden aparecer en cualquier parte del cuerpo.
+                                    &lt;/p>
+                                &lt;/CardContent>
+                            &lt;/div>
+
+                            &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #ac3939'}}>
+                                &lt;CardHeader style={{padding: '10px'}}>
+                                    &lt;img className="tipo" src="../images/1.jpg"/>
+                                    &lt;div className={isMobileT ? 'tipo-tittle1-mobile' : 'tipo-tittle1'}>Carcinoma Basocelular&lt;/div>
+                                &lt;/CardHeader>
+                                &lt;CardContent>
+                                    {isMobileT2 ? (
+                                            &lt;div className="tipo-subtittle1-mobile">
+                                                &lt;div className="first-line">
+                                                    &lt;CgDanger style={{fontSize: '20px', color: 'red'}}/>
+                                                    &lt;div>
+                                                        Riesgo &lt;span  className='alto'> ALTO&lt;/span > :
+                                                    &lt;/div>
+                                                &lt;/div>
+                                                &lt;p className="second-line"> Cáncer de piel&lt;/p>
+                                            
+                                            &lt;/div>
+                                        ):(
+                                            &lt;p className="tipo-subtittle1">&lt;CgDanger style={{ width: '10%', fontSize: '20px', color: 'red' }}/>Riesgo &lt;p className='alto'> ALTO&lt;/p>: Cáncer de piel&lt;/p>
+
+                                    )}
+                                    &lt;p className='text-body'>
+                                    El carcinoma basocelular es el tipo más común de cáncer de piel. A menudo se presenta como una pequeña protuberancia o bulto en la piel que puede ser de color rosa, rojo, blanco o translúcido. Si bien rara vez se disemina a otras partes del cuerpo, puede causar daño localizado si no se trata.                            &lt;/p>
+                                &lt;/CardContent>
+                            &lt;/div>
+                        &lt;/div>
+
+                        
+                        &lt;div className='sec-2'>
+                            Lesiones potencialmente malignas
+                        &lt;/div>
+
+                        &lt;div style={{display: 'grid', gridTemplateColumns: '45% 45%', gap: '10%'}}>
+                            &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #ffc34d'}}>
+                                &lt;CardHeader style={{padding: '10px'}}>
+                                    &lt;img className="tipo" src="../images/1.jpg"/>
+                                    &lt;div className={isMobileT ? 'tipo-tittle2-mobile' : 'tipo-tittle2'} >Nevus&lt;/div>
+                                &lt;/CardHeader>
+                                &lt;CardContent>
+                                    {isMobileT2 ? (
+                                            &lt;div className="tipo-subtittle2-mobile">
+                                                &lt;div className="first-line">
+                                                    &lt;PiWarningFill style={{fontSize: '20px', color: 'orange'}}/>
+                                                    &lt;div>
+                                                        Riesgo &lt;span  className='medio'> POTENCIAL&lt;/span > :
+                                                    &lt;/div>
+                                                &lt;/div>
+                                                &lt;p className="second-line"> Lunar&lt;/p>
+                                            
+                                            &lt;/div>
+                                        ):(
+                                            &lt;p className="tipo-subtittle2">&lt;PiWarningFill style={{ width: '10%', fontSize: '20px', color: 'orange' }}/>Riesgo &lt;p className='medio'> POTECIAL&lt;/p>: Lunar&lt;/p>
+
+                                    )}
+                                    &lt;p className='text-body'>
+                                    Los nevus, comúnmente conocidos como lunares, son crecimientos pigmentados en la piel que pueden variar en tamaño, forma y color. La mayoría de los nevus son benignos, pero algunos pueden transformarse en melanoma, especialmente si experimentan cambios en el tamaño, forma o color con el tiempo.                            &lt;/p>
+                                &lt;/CardContent>
+                            &lt;/div>
+
+                            &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #ffc34d'}}>
+                                &lt;CardHeader style={{padding: '10px'}}>
+                                    &lt;img className="tipo" src="../images/1.jpg"/>
+                                    &lt;div className={isMobileT ? 'tipo-tittle2-mobile' : 'tipo-tittle2'} >Queratosis Actínica&lt;/div>
+                                &lt;/CardHeader>
+                                &lt;CardContent>
+                                    {isMobileT2 ? (
+                                            &lt;div className="tipo-subtittle2-mobile">
+                                                &lt;div className="first-line">
+                                                    &lt;PiWarningFill style={{fontSize: '20px', color: 'orange'}}/>
+                                                    &lt;div>
+                                                        Riesgo &lt;span  className='medio'> POTENCIAL&lt;/span > :
+                                                    &lt;/div>
+                                                &lt;/div>
+                                                &lt;p className="second-line"> Lesión precancerosa&lt;/p>
+                                            
+                                            &lt;/div>
+                                        ):(
+                                            &lt;p className="tipo-subtittle2">&lt;PiWarningFill style={{ width: '10%', fontSize: '20px', color: 'orange' }}/>Riesgo &lt;p className='medio'> POTECIAL&lt;/p>: Lesión precancerosa&lt;/p>
+
+                                    )}
+                                    &lt;p className='text-body'>
+                                    La queratosis actínica, también conocida como queratosis solar, es una lesión precancerosa causada por la exposición crónica a la radiación ultravioleta del sol. Se manifiesta como manchas rojas, ásperas y escamosas en la piel que pueden volverse sensibles o dolorosas.                            &lt;/p>
+                                &lt;/CardContent>
+                            &lt;/div>
+                        &lt;/div>
+
+                        &lt;div className='sec-3'>
+                            Lesiones benignas
+                        &lt;/div>
+
+                    
+
+                        { isMobile3 ? (
+                            &lt;div>
+                                &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                                    &lt;CardHeader style={{padding: '10px'}}>
+                                        &lt;img className="tipo" src="../images/1.jpg"/>
+                                        &lt;div className={isMobileT ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Queratosis Seborreica&lt;/div>
+                                    &lt;/CardHeader>
+                                    &lt;CardContent>
+                                        {isMobileT2 ? (
+                                                &lt;div className="tipo-subtittle3-mobile">
+                                                    &lt;div className="first-line">
+                                                        &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                        &lt;div>
+                                                            &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                        &lt;/div>
+                                                    &lt;/div>
+                                                    &lt;p className="second-line"> Mancha de edad&lt;/p>
+                                                
+                                                &lt;/div>
+                                            ):(
+                                                &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Mancha de edad&lt;/p>
+            
+                                        )}
+                                        &lt;p className='text-body'>
+                                        Las queratosis seborreicas, también llamadas verrugas seborreicas o manchas de la edad, son crecimientos cutáneos benignos que generalmente aparecen en áreas de la piel expuestas al sol. A menudo son de color marrón oscuro o negro y tienen una textura cerosa o escamosa.                            &lt;/p>
+                                    &lt;/CardContent>
+                                &lt;/div>
+        
+                                &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                                    &lt;CardHeader style={{padding: '10px'}}>
+                                        &lt;img className="tipo" src="../images/1.jpg"/>
+                                        &lt;div className={isMobileT ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Dermatofibroma&lt;/div>
+                                    &lt;/CardHeader>
+                                    &lt;CardContent>
+                                    {isMobileT2 ? (
+                                                &lt;div className="tipo-subtittle3-mobile">
+                                                    &lt;div className="first-line">
+                                                        &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                        &lt;div>
+                                                            &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                        &lt;/div>
+                                                    &lt;/div>
+                                                    &lt;p className="second-line"> Lesión benigna&lt;/p>
+                                                
+                                                &lt;/div>
+                                            ):(
+                                                &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Lesión benigna&lt;/p>
+            
+                                        )}
+                                        &lt;p className='text-body'>
+                                        El dermatofibroma es una lesión cutánea benigna que se desarrolla a partir de células fibroblásticas en la dermis de la piel. Por lo general, aparece como un pequeño bulto duro de color marrón o rosa que puede tener una apariencia ligeramente elevada. Aunque son inofensivos, a veces pueden confundirse con melanoma debido a su apariencia.                            &lt;/p>
+                                    &lt;/CardContent>
+                                &lt;/div>
+            
+                                &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                                    &lt;CardHeader style={{padding: '10px'}}>
+                                        &lt;img className="tipo" src="../images/1.jpg"/>
+                                        &lt;div className={isMobileT ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Lesiones Vasculares&lt;/div>
+                                    &lt;/CardHeader>
+                                    &lt;CardContent>
+                                    {isMobileT2 ? (
+                                                &lt;div className="tipo-subtittle3-mobile">
+                                                    &lt;div className="first-line">
+                                                        &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                        &lt;div>
+                                                            &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                        &lt;/div>
+                                                    &lt;/div>
+                                                    &lt;p className="second-line"> Lesión benigna&lt;/p>
+                                                
+                                                &lt;/div>
+                                            ):(
+                                                &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Lesión benigna&lt;/p>
+            
+                                        )}
+                                        &lt;p className='text-body'>
+                                        Las lesiones vasculares son problemas en los vasos sanguíneos de la piel. Incluyen hemangiomas (manchas rojas en bebés), malformaciones vasculares y telangiectasias (pequeñas venas visibles). Estas lesiones pueden ser de nacimiento o desarrollarse con el tiempo. En términos cancerígenos son inofensivas, aunque pueden necesitar tratamiento si afectan la apariencia o la función.                            &lt;/p>
+                                    &lt;/CardContent>
+                                &lt;/div>
+                            &lt;/div>
+
+                        ):(
+                            &lt;div style={{display: 'grid', gridTemplateColumns: '32% 32% 32%', gap: '2%'}}>
+                                &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                                    &lt;CardHeader style={{padding: '10px'}}>
+                                        &lt;img className="tipo" src="../images/1.jpg"/>
+                                        &lt;div className={isMobileT ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Queratosis Seborreica&lt;/div>
+                                    &lt;/CardHeader>
+                                    &lt;CardContent>
+                                        {isMobileT2 ? (
+                                                &lt;div className="tipo-subtittle3-mobile">
+                                                    &lt;div className="first-line">
+                                                        &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                        &lt;div>
+                                                        &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                        &lt;/div>
+                                                    &lt;/div>
+                                                    &lt;p className="second-line"> Mancha de edad&lt;/p>
+                                                
+                                                &lt;/div>
+                                            ):(
+                                                &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Mancha de edad&lt;/p>
+
+                                        )}
+                                        &lt;p className='text-body'>
+                                        Las queratosis seborreicas, también llamadas verrugas seborreicas o manchas de la edad, son crecimientos cutáneos benignos que generalmente aparecen en áreas de la piel expuestas al sol. A menudo son de color marrón oscuro o negro y tienen una textura cerosa o escamosa.                            &lt;/p>
+                                    &lt;/CardContent>
+                                &lt;/div>
+
+                                &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                                    &lt;CardHeader style={{padding: '10px'}}>
+                                        &lt;img className="tipo" src="../images/1.jpg"/>
+                                        &lt;div className={isMobileT ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Dermatofibroma&lt;/div>
+                                    &lt;/CardHeader>
+                                    &lt;CardContent>
+                                    {isMobileT2 ? (
+                                                &lt;div className="tipo-subtittle3-mobile">
+                                                    &lt;div className="first-line">
+                                                        &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                        &lt;div>
+                                                        &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                        &lt;/div>
+                                                    &lt;/div>
+                                                    &lt;p className="second-line"> Lesión benigna&lt;/p>
+                                                
+                                                &lt;/div>
+                                            ):(
+                                                &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Lesión benigna&lt;/p>
+
+                                        )}
+                                        &lt;p className='text-body'>
+                                        El dermatofibroma es una lesión cutánea benigna que se desarrolla a partir de células fibroblásticas en la dermis de la piel. Por lo general, aparece como un pequeño bulto duro de color marrón o rosa que puede tener una apariencia ligeramente elevada. Aunque son inofensivos, a veces pueden confundirse con melanoma debido a su apariencia.                            &lt;/p>
+                                    &lt;/CardContent>
+                                &lt;/div>
+
+                                &lt;div class="card demo-card-header-pic" style={{backgroundColor: 'white', border: '3px solid #00802b'}}>
+                                    &lt;CardHeader style={{padding: '10px'}}>
+                                        &lt;img className="tipo" src="../images/1.jpg"/>
+                                        &lt;div className={isMobileT ? 'tipo-tittle3-mobile' : 'tipo-tittle3'} >Lesiones Vasculares&lt;/div>
+                                    &lt;/CardHeader>
+                                    &lt;CardContent>
+                                    {isMobileT2 ? (
+                                                &lt;div className="tipo-subtittle3-mobile">
+                                                    &lt;div className="first-line">
+                                                        &lt;MdHealthAndSafety style={{fontSize: '20px', color: 'green'}}/>
+                                                        &lt;div>
+                                                        &lt;span  className='bajo'> SIN RIESGO&lt;/span > :
+                                                        &lt;/div>
+                                                    &lt;/div>
+                                                    &lt;p className="second-line"> Lesión benigna&lt;/p>
+                                                
+                                                &lt;/div>
+                                            ):(
+                                                &lt;p className="tipo-subtittle3">&lt;MdHealthAndSafety style={{ width: '10%', fontSize: '20px', color: 'green' }}/>&lt;p className='bajo'> SIN RIESGO&lt;/p>: Lesión benigna&lt;/p>
+
+                                        )}
+                                        &lt;p className='text-body'>
+                                        Las lesiones vasculares son problemas en los vasos sanguíneos de la piel. Incluyen hemangiomas (manchas rojas en bebés), malformaciones vasculares y telangiectasias (pequeñas venas visibles). Estas lesiones pueden ser de nacimiento o desarrollarse con el tiempo. En términos cancerígenos son inofensivas, aunque pueden necesitar tratamiento si afectan la apariencia o la función.                            &lt;/p>
+                                    &lt;/CardContent>
+                                &lt;/div>
+                            &lt;/div>
+                        )}
+                        
+                    &lt;/Container>
+
+                )}
+
+            &lt;/div>
+        &lt;/div>
+      ):(
+        &lt;div class="page" >
+
+          { isMobile2 ? (
+            &lt;div class="navbar" style={{display: 'grid', gridTemplateColumns: ' 1% 40px 20% 70%', background: 'teal', color: '#ffffff', textAlign: 'center', alignItems: 'center',  fontSize: '170%', lineHeight: '250%'}}>
+          
+              &lt;div/>
+              &lt;IoMenu onClick={handleMenu} style={{width: '100%', fontSize: '40px', color:'white'}}/>
+              
+              &lt;div onClick={handleMenu} style={{width: '100%', fontSize: '120%'}}>
+                      VideSkin
+              &lt;/div>
+
+
+            &lt;/div>
+          ):(
+            &lt;div class="navbar" style={{display: 'grid', gridTemplateColumns: '1fr', background: 'teal', color: '#ffffff', textAlign: 'center',alignContent: 'center', fontSize: '170%'}}>
+              &lt;span style={{}}>VideSkin&lt;/span>
+            &lt;/div>
+          )}
+
+          &lt;div class="page-content"  >
+
+            &lt;Panel left cover containerEl="#panel-page" id="home">
+                &lt;div class="panel panel-resizable panel-left panel-floating panel-in">
+                    &lt;div class="view">
+                      &lt;div class="page page-current">
+                        &lt;div class="page-content">
+                            &lt;div class="block-title" style={{height: '30px', fontSize: '20px'}}>
+                                &lt;FaArrowLeft class="link panel-close" style={{fontSize: '15px'}}/> Menú de navegación&lt;/div>
+                            &lt;div class="list">
+                                &lt;ul>
+
+                                    &lt;li class="">
+                                        &lt;a class="item-link panel-close" onClick={handleGoHome}>
+                                            &lt;div class="item-content">
+                                                &lt;div class="item-inner">
+                                                    &lt;div onClick={handleGoHome} class="item-title">Home&lt;/div>
+                                                &lt;/div>
+                                            &lt;/div>
+                                        &lt;/a>
+                                    &lt;/li>
+                                    &lt;li class="">
+                                        &lt;a class="item-link panel-close" onClick={handleGoAnalizar}>
+                                            &lt;div class="item-content">
+                                                &lt;div class="item-inner">
+                                                    &lt;div onClick={handleGoAnalizar} class="item-title">Analizar&lt;/div>
+                                                &lt;/div>
+                                            &lt;/div>
+                                        &lt;/a>
+                                    &lt;/li>
+                                    &lt;li class="">
+                                        &lt;a class="item-link panel-close" onClick={handleGoGaleria}>
+                                            &lt;div class="item-content">
+                                                &lt;div class="item-inner">
+                                                    &lt;div class="item-title">Galeria&lt;/div>
+                                                &lt;/div>
+                                            &lt;/div>
+                                        &lt;/a>
+                                    &lt;/li>
+                                    &lt;li class="">
+                                        &lt;a class="item-link panel-close" onClick={handleGoCalendario}>
+                                            &lt;div class="item-content">
+                                                &lt;div class="item-inner">
+                                                    &lt;div class="item-title">Calendario&lt;/div>
+                                                &lt;/div>
+                                            &lt;/div>
+                                        &lt;/a>
+                                    &lt;/li>
+                                    &lt;li class="">
+                                        &lt;a class="item-link panel-close" onClick={handleGoStats}>
+                                            &lt;div class="item-content">
+                                                &lt;div class="item-inner">
+                                                    &lt;div class="item-title">Estadisticas&lt;/div>
+                                                &lt;/div>
+                                            &lt;/div>
+                                        &lt;/a>
+                                    &lt;/li>
+                                &lt;/ul>
+                            &lt;/div>
+
+                            &lt;div class="block-title">Configuración&lt;/div>&lt;div class="list">
+                                &lt;ul>
+                                    &lt;li class="">
+                                        &lt;a class="item-link panel-close" onClick={handleGoSettings} >
+                                            &lt;div class="item-content">
+                                                &lt;div class="item-inner">
+                                                    &lt;div class="item-title">Configuración&lt;/div>
+                                                &lt;/div>
+                                            &lt;/div>
+                                        &lt;/a>
+                                    &lt;/li>
+                                    &lt;li class="">
+                                        &lt;a class="item-link panel-close" onClick={LogOutDialog}>
+                                            &lt;div class="item-content">
+                                                &lt;div class="item-inner">
+                                                    &lt;div class="item-title">Cerrar Sesión&lt;/div>
+                                                &lt;/div>
+                                            &lt;/div>
+                                        &lt;/a>
+                                    &lt;/li>
+                                &lt;/ul>
+                            &lt;/div>
+                        &lt;/div>
+                      &lt;/div>
+                    &lt;/div>
+                &lt;/div>
+            &lt;/Panel>
+
+            &lt;Container id='container' >
+
+              { isMobile ? (
+                &lt;div>
+                  {/* PERFIL */}
+                  &lt;div className='perfil'>
+                        &lt;CuadradoHancho style={{margin: '5%'}}>
+                          &lt;img src={`data:image/png;base64, ${perfilImage}`}  style={{objectFit:'cover', width: "100%",  aspectRatio: '1 / 1',  borderRadius: '50%', border: `5px solid white`}}/>
+                        &lt;/CuadradoHancho>
+                        &lt;div style={{display: 'flex', flexDirection: 'column',height: '100%', marginLeft: '3%'}}>
+                          &lt;div style={{flex: '2', alignContent: 'center'}}>   
+                          &lt;div className="Linkicon" style={{display: 'grid', height: '50px', gridTemplateColumns: '15% 85%', alignItems: 'center', marginTop: '5%', backgroundColor: 'white', borderRadius: '15px'}}>
+                                &lt;IoPersonCircleSharp   style={{width: '100%', fontSize: '30px', color:'#006689'}}/>
+                                &lt;div style={{width: '100%', fontWeight: 'bold', color: 'black', fontSize: '120%', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>
+                                {user}
+                                &lt;/div>
+                              &lt;/div>
+                            &lt;/div> 
+                            &lt;div style={{flex: '3'}}>   
+
+                            &lt;/div> 
+                        &lt;/div>
+                  &lt;/div>
+
+                  {/* UVA */}
+                  &lt;div className='uva'>
+                      &lt;div className="Linkicon" style={{width: '95%', display: 'grid', gridTemplateColumns: '10% 90%', alignItems: 'center'}}>
+                        &lt;FaSun   style={{width: '100%', fontSize: '30px', color: 'Gold'}}/>
+                        &lt;div style={{width: '100%'}}>
+                          {ciudad ? (
+                            &lt;div style={{width: '100%',display: 'grid', gridTemplateColumns: '50% 50%', alignItems: 'center'}}>
+                              &lt;div style={{fontWeight: '600', fontSize: '140%', color: 'white'}}>
+                                &lt;span>{ciudad} ({pais})&lt;/span>
+                              &lt;/div>
+                              &lt;div style={{display: 'flex', flexDirection: 'column'}}>
+                                &lt;div style={{flex: '1',fontWeight: '600', fontSize: '140%', color: 'white', marginBottom: '5px'}}>
+                                  Indice UV: {uvIndex}
+                                &lt;/div>
+                                &lt;div style={{flex: '1', display: 'grid', gridTemplateColumns: '5% 85% 10%', alignItems: 'center', textAlign: 'center', fontWeight: '600', fontSize: '140%', color: 'white'}}>
+                                  1{renderRiskBar(uvIndex)}11
+                                &lt;/div> 
+                              &lt;/div>
+                            &lt;/div>
+                          ):(
+                            &lt;div style={{fontWeight: '600', fontSize: '110%', color: 'white'}}>
+                            No se ha podido acceder a la localización.
+                            &lt;/div>
+                          )}
+                        &lt;/div>
+                      &lt;/div>
+                  &lt;/div>
+
+
+                  {/*SECCION INSTRUCCIONES*/}
+                  &lt;div class='instrucciones'>
+                    &lt;div className="Linkicon" style={{display: 'grid', gridTemplateColumns: '10% 90%', alignItems: 'center', margin:'5% 0'}}>
+                      &lt;MdImageSearch  style={{width: '100%', fontSize: '30px'}}/>
+                      &lt;div style={{width: '100%', fontWeight: 'bold', fontSize: '150%'}}>
+                        Realiza tu seguimiento dermatológico
+                      &lt;/div>
+                    &lt;/div>
+
+                    &lt;div className="Linkicon" style={{display: 'grid', gridTemplateColumns: '10% 90%', alignItems: 'center', margin:'5% 0'}}>
+                      &lt;AiOutlineAim  style={{width: '100%', fontSize: '30px', color:'#006689'}}/>
+                      &lt;div style={{width: '100%', fontSize: '120%'}}>
+                        Añade las lesiones en el mapa y mantenlas localizadas. Pulsa sobre los marcadores para ampliar la información.
+                      &lt;/div>
+                    &lt;/div>
+
+                    &lt;div className="Linkicon" style={{display: 'grid', gridTemplateColumns: '10% 90%', alignItems: 'center', margin:'5% 0'}}>
+                      &lt;MdHistory style={{width: '100%', fontSize: '30px', color:'#006689'}}/>
+                      &lt;div style={{width: '100%', fontSize: '120%'}}>
+                        Explora el historial de cada lesión y mantén su evolución controlada.
+                      &lt;/div>
+                    &lt;/div>
+
+                    &lt;div className="Linkicon" style={{display: 'grid', gridTemplateColumns: '10% 90%', alignItems: 'center', margin:'5% 0'}}>
+                      &lt;FaRegHourglassHalf  style={{width: '100%', fontSize: '25px', color:'#006689'}}/>
+                      &lt;div style={{width: '100%', fontSize: '120%'}}>
+                      Realiza actualizaciones periódicamente para seguir la evolución de la lesión y tomar decisiones.
+                      &lt;/div>
+                    &lt;/div>
+
+                    &lt;div style={{width: '95%', margin: '20px auto', marginTop: '30px'}}>
+                      &lt;Button fill title="Analizar" onClick={handleNewLesion} color="teal">Añadir Lesión&lt;/Button>
+                    &lt;/div>
+
+                  &lt;/div>
+
+                  
+                  {/*SECCION BODY*/}
+                  &lt;ImageContainer>
+                    &lt;MarkersContainer>
+                      &lt;Imagen src={currentImage} alt="Imagen" className="body-image"/>
+                    
+                      {/* Renderizar los marcadores */}
+                      {markers.map((marker, index) =>{
+
+                        const popoverClassName  = `popover-${index}`;
+                        //console.log(index,popoverClassName,marker.color )
+                        return(
+                        &lt;div key={index} onClick={() => handleClickMarker(marker)} style={{ cursor: 'pointer' }}>
+                          &lt;Marker className='Marker' popoverOpen={`.${popoverClassName}`} marker={marker} currentimage={currentImage} >&lt;FaLocationCrosshairs style={{fontSize: '25px', color: marker.color}}/>&lt;/Marker>
+
+                          &lt;Popover className={popoverClassName}>
+                            &lt;div style={{display: 'flex', flexDirection: 'column', width: '99%',height: '100%'}}>
+                              &lt;div style={{flex: 1, margin: '2%', display: 'grid', gridTemplateColumns: '45% 50%', alignItems: 'center'}}>
+                                &lt;img src={`data:image/png;base64, ${marker.imagen}`} style={{ borderRadius: '25px', width: "100%", height: '100px', marginTop: '3%', marginLeft: '3%', objectFit:'cover', border: `4px solid teal`}}/>
+                                &lt;div style={{width: '75%', height: '0', paddingBottom: '70%', position: 'relative', maxWidth: '90px', maxHeight: '80px', margin: 'auto 25%'}}>
+                                  &lt;CircularProgressbar value={marker.probabilidad} text={`${marker.probabilidad}%`} styles={buildStyles({
+                                                                                                                                    // Rotation of path and trail, in number of turns (0-1)
+                                                                                                                                    rotation: 0,
+
+                                                                                                                                    // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
+                                                                                                                                    strokeLinecap: 'round',
+
+                                                                                                                                    // Text size
+                                                                                                                                    textSize: '160%',
+                                                                                                                                    fontWeight: 'bolder',
+
+                                                                                                                                    // How long animation takes to go from one percentage to another, in seconds
+                                                                                                                                    pathTransitionDuration: 1,
+
+                                                                                                                                    // Can specify path transition in more detail, or remove it entirely
+                                                                                                                                    // pathTransition: 'none',
+
+                                                                                                                                    // Colors
+                                                                                                                                    pathColor: marker.color,
+                                                                                                                                    textColor: 'black',
+                                                                                                                                    trailColor: '#d6d6d6',
+                                                                                                                                    backgroundColor: 'black',
+                                                                                                                                  })}/>
+                                &lt;/div>
+                              &lt;/div>
+                              &lt;div style={{flex: 1, margin: '5% 4%', marginBottom: '5%', display: 'grid', gridTemplateColumns: '100%', borderRadius: '16px'}}>
+                                &lt;div style={{display: 'grid', gridTemplateColumns: '48% 48%', gap: '4%', alignItems: 'center'}}>
+                                  &lt;a class="list-button popover-close" style={{backgroundColor: '#FF7F50', color: 'white', borderRadius: '8px'}} onClick={() => handleAmpliar(marker)}>Ampliar&lt;/a>
+                                  &lt;a class="list-button popover-close" style={{backgroundColor: '#FF7F50', color: 'white', borderRadius: '8px'}} onClick={() => handleBorrarMarker(marker)}>Borrar&lt;/a>
+                                &lt;/div>
+                              &lt;/div>
+                            &lt;/div>
+                          &lt;/Popover>
+                        &lt;/div>
+                      )})}
+
+                    &lt;/MarkersContainer>
+                  &lt;/ImageContainer>
+
+                  &lt;ContainerButton>
+                    &lt;Button fill style={{background: '#FF7F50'}} onClick={handleCambiarDelante}>Delante&lt;/Button>
+                    &lt;Button fill style={{background: '#FF7F50'}} onClick={handleCambiarDetras}>Detras&lt;/Button>
+                  &lt;/ContainerButton>
+
+                  &lt;div style={{width: '95%', margin: '10px auto'}}>
+                      &lt;Button fill title="Analizar" onClick={handleNewLesion} color="teal">Añadir Lesión&lt;/Button>
+                  &lt;/div>
+
+                  {/*SECCION FOOTER*/}       
+                  &lt;List strong inset dividersIos style={{marginBottom: '0px'}}>
+                    &lt;ListItem onClick={handleTipos} style={{height: '7vh', alignContent: 'center', fontSize: '20px'}} title="Tipos de Lesión"/>
+                  &lt;/List>
+              
+                &lt;/div>
+              ):(
+                &lt;div class='homeGrid'>
+                  &lt;div className='columna'>
+
+                    {/* PERFIL */}
+                    &lt;div className='perfil'>
+                    
+                          &lt;Cuadrado>
+                            &lt;img src={`data:image/png;base64, ${perfilImage}`}  style={{objectFit:'cover', height: "100%",  aspectRatio: '1 / 1',  borderRadius: '50%'}}/>
+                          &lt;/Cuadrado>
+                    
+                          &lt;div style={{display: 'flex', flexDirection: 'column',height: '100%', marginLeft: '14%'}}>
+                            &lt;div style={{flex: '2', alignContent: 'center'}}>   
+                              &lt;div className="Linkicon" style={{display: 'grid', height: '50px', gridTemplateColumns: '15% 85%', alignItems: 'center', marginTop: '5%', backgroundColor: 'white', borderRadius: '15px'}}>
+                                &lt;IoPersonCircleSharp   style={{width: '100%', fontSize: '30px', color:'#006689'}}/>
+                                &lt;div style={{width: '100%', fontWeight: 'bold', color: 'black', fontSize: '120%', overflow: 'hidden', whiteSpace: 'nowrap', textOverflow: 'ellipsis'}}>
+                                {user}
+                                &lt;/div>
+                              &lt;/div>
+                            &lt;/div> 
+                            &lt;div style={{flex: '3'}}>   
+
+                            &lt;/div> 
+                          &lt;/div>
+                    &lt;/div>
+
+                    {/* UVA */}
+                    &lt;div className='uva'>
+                      &lt;div className="Linkicon" style={{width: '95%', display: 'grid', gridTemplateColumns: '10% 90%', alignItems: 'center'}}>
+                        &lt;FaSun   style={{width: '100%', fontSize: '30px', color: 'Gold'}}/>
+                        &lt;div style={{width: '100%'}}>
+                          {ciudad ? (
+                            &lt;div style={{width: '100%',display: 'grid', gridTemplateColumns: '50% 50%', alignItems: 'center'}}>
+                              &lt;div style={{fontWeight: '600', fontSize: '140%', color: 'white'}}>
+                                &lt;span>{ciudad} ({pais})&lt;/span>
+                              &lt;/div>
+                              &lt;div style={{display: 'flex', flexDirection: 'column'}}>
+                                &lt;div style={{flex: '1',fontWeight: '600', fontSize: '140%', color: 'white', marginBottom: '5px'}}>
+                                  Indice UV: {uvIndex}
+                                &lt;/div>
+                                &lt;div style={{flex: '1', display: 'grid', gridTemplateColumns: '5% 85% 10%', alignItems: 'center', textAlign: 'center', fontWeight: '600', fontSize: '140%', color: 'white'}}>
+                                  1{renderRiskBar(uvIndex)}11
+                                &lt;/div> 
+                              &lt;/div>
+                            &lt;/div>
+                          ):(
+                            &lt;div style={{fontWeight: '600', fontSize: '110%', color: 'white'}}>
+                            No se ha podido acceder a la localización.
+                            &lt;/div>
+                          )}
+                        &lt;/div>
+                      &lt;/div>
+                    &lt;/div>
+
+                    {/*SECCION INSTRUCCIONES*/}
+                    &lt;div class='instrucciones'>
+                      &lt;div className="Linkicon" style={{display: 'grid', gridTemplateColumns: '10% 90%', alignItems: 'center', margin:'5% 0'}}>
+                        &lt;MdImageSearch  style={{width: '100%', fontSize: '30px'}}/>
+                        &lt;div style={{width: '100%', fontWeight: 'bold', fontSize: '150%'}}>
+                          Realiza tu seguimiento dermatológico
+                        &lt;/div>
+                      &lt;/div>
+
+                      &lt;div className="Linkicon" style={{display: 'grid', gridTemplateColumns: '10% 90%', alignItems: 'center', margin:'5% 0'}}>
+                        &lt;AiOutlineAim  style={{width: '100%', fontSize: '30px', color:'#006689'}}/>
+                        &lt;div style={{width: '100%', fontSize: '120%'}}>
+                          Añade las lesiones en el mapa y mantenlas localizadas. Pulsa sobre los marcadores para ampliar la información.
+                        &lt;/div>
+                      &lt;/div>
+
+                      &lt;div className="Linkicon" style={{display: 'grid', gridTemplateColumns: '10% 90%', alignItems: 'center', margin:'5% 0'}}>
+                        &lt;MdHistory style={{width: '100%', fontSize: '30px', color:'#006689'}}/>
+                        &lt;div style={{width: '100%', fontSize: '120%'}}>
+                          Explora el historial de cada lesión y mantén su evolución controlada.
+                        &lt;/div>
+                      &lt;/div>
+
+                      &lt;div className="Linkicon" style={{display: 'grid', gridTemplateColumns: '10% 90%', alignItems: 'center', margin:'5% 0'}}>
+                        &lt;FaRegHourglassHalf  style={{width: '100%', fontSize: '25px', color:'#006689'}}/>
+                        &lt;div style={{width: '100%', fontSize: '120%'}}>
+                        Realiza actualizaciones periódicamente para seguir la evolución de la lesión y tomar decisiones.
+                        &lt;/div>
+                      &lt;/div>
+
+                      &lt;div style={{width: '95%', margin: '20px auto', marginTop: '30px'}}>
+                        &lt;Button fill title="Analizar" onClick={handleNewLesion} color="teal">Añadir Lesión&lt;/Button>
+                      &lt;/div>
+
+                    &lt;/div>
+
+                    {/*SECCION FOOTER*/}       
+                    &lt;List strong inset dividersIos style={{marginBottom: '0px'}}>
+                      &lt;ListItem onClick={handleTipos} style={{height: '7vh', alignContent: 'center', fontSize: '20px'}} title="Tipos de Lesión"/>
+                    &lt;/List>
+
+                  &lt;/div>
+
+                  {/*SECCION BODY*/}
+                  &lt;div className='columna'>
+                    
+                    
+                    &lt;ImageContainer>
+                      &lt;MarkersContainer>
+                        &lt;Imagen src={currentImage} alt="Imagen" className="body-image"/>
+                      
+                        {/* Renderizar los marcadores */}
+                        {markers.map((marker, index) =>{
+
+                          const popoverClassName  = `popover-${index}`;
+                          //console.log(index,popoverClassName,marker.color )
+                          return(
+                          &lt;div key={index} onClick={() => handleClickMarker(marker)} style={{ cursor: 'pointer' }}>
+                            &lt;Marker className='Marker' popoverOpen={`.${popoverClassName}`} marker={marker} currentimage={currentImage} >&lt;FaLocationCrosshairs style={{fontSize: '25px', color: marker.color}}/>&lt;/Marker>
+
+                            &lt;Popover className={popoverClassName}>
+                              &lt;div style={{display: 'flex', flexDirection: 'column', width: '99%',height: '100%'}}>
+                                &lt;div style={{flex: 1, margin: '2%', display: 'grid', gridTemplateColumns: '45% 50%', alignItems: 'center'}}>
+                                  &lt;img src={`data:image/png;base64, ${marker.imagen}`} style={{ borderRadius: '25px', width: "100%", height: '100px', marginTop: '3%', marginLeft: '3%', objectFit:'cover', border: `4px solid teal`}}/>
+                                  &lt;div style={{width: '75%', height: '0', paddingBottom: '70%', position: 'relative', maxWidth: '90px', maxHeight: '80px', margin: 'auto 25%'}}>
+                                    &lt;CircularProgressbar value={marker.probabilidad} text={`${marker.probabilidad}%`} styles={buildStyles({
+                                                                                                                                      // Rotation of path and trail, in number of turns (0-1)
+                                                                                                                                      rotation: 0,
+
+                                                                                                                                      // Whether to use rounded or flat corners on the ends - can use 'butt' or 'round'
+                                                                                                                                      strokeLinecap: 'round',
+
+                                                                                                                                      // Text size
+                                                                                                                                      textSize: '160%',
+                                                                                                                                      fontWeight: 'bolder',
+
+                                                                                                                                      // How long animation takes to go from one percentage to another, in seconds
+                                                                                                                                      pathTransitionDuration: 1,
+
+                                                                                                                                      // Can specify path transition in more detail, or remove it entirely
+                                                                                                                                      // pathTransition: 'none',
+
+                                                                                                                                      // Colors
+                                                                                                                                      pathColor: marker.color,
+                                                                                                                                      textColor: 'black',
+                                                                                                                                      trailColor: '#d6d6d6',
+                                                                                                                                      backgroundColor: 'black',
+                                                                                                                                    })}/>
+                                  &lt;/div>
+                                &lt;/div>
+                                &lt;div style={{flex: 1, margin: '5% 4%', marginBottom: '5%', display: 'grid', gridTemplateColumns: '100%', borderRadius: '16px'}}>
+                                  &lt;div style={{display: 'grid', gridTemplateColumns: '48% 48%', gap: '4%', alignItems: 'center'}}>
+                                    &lt;a class="list-button popover-close" style={{backgroundColor: '#FF7F50', color: 'white', borderRadius: '8px'}} onClick={() => handleAmpliar(marker)}>Ampliar&lt;/a>
+                                    &lt;a class="list-button popover-close" style={{backgroundColor: '#FF7F50', color: 'white', borderRadius: '8px'}} onClick={() => handleBorrarMarker(marker)}>Borrar&lt;/a>
+                                  &lt;/div>
+                                &lt;/div>
+                              &lt;/div>
+                            &lt;/Popover>
+                          &lt;/div>
+                        )})}
+
+                      &lt;/MarkersContainer>
+                    &lt;/ImageContainer>
+
+                    &lt;ContainerButton>
+                      &lt;Button fill style={{background: '#FF7F50'}} onClick={handleCambiarDelante}>Delante&lt;/Button>
+                      &lt;Button fill style={{background: '#FF7F50'}} onClick={handleCambiarDetras}>Detras&lt;/Button>
+                    &lt;/ContainerButton>
+
+                  
+                  &lt;/div>
+                &lt;/div>
+              )}
+              
+            &lt;/Container>
+              
+            &lt;BodyPopup showPopup={showPopupBody} closePopup={closePopupBody} handleCambiarDelante={handleCambiarDelante} handleCambiarDetras={handleCambiarDetras} currentImage={currentImage} id="body-popup"/>
+            &lt;AmpliarPopUp showPopup={showPopupAmpliar} closePopup={closePopupAmpliar} marker={marker} setMarker={setMarker} handleActualizar={handleActualizar}/>
+            &lt;InstruccionesPopup showPopup={instruccionesPopUp} closePopup={closeInstruccionesPopUp} imagen={imagen} setImagen={setImagen} fileSelected={fileSelected} setFileSelected={setFileSelected} handleAnalizar = {handleAnalizar}/>
+            &lt;ResultPopUp showPopup={resultPopUp} cerrarTodo={handleCerrar} closePopup={closeResultPopUp} imagen={imagen} analizar={analizar} analizado={analizado} setAnalizado={setAnalizado} marker={marker} setMarker={setMarker} body={currentImage} simple={0} update={1}/>
+
+          &lt;/div>
+        &lt;/div>
+      )}
+    &lt;/div>
+  );
+}
+export default React.memo(HomePage);
+
+
+const Container =styled.div`
+  height: auto;
+  width: 100%;
+  
+  margin: 10px auto;
+  
+`
+
+
+const Cuadrado = styled.div`
+height: 15vh;
+min-height: 120px;
+border-radius: 16px;
+margin: auto;
+display: flex;
+justify-content: center; /* Centra horizontalmente */
+align-items: center; /* Centra verticalmente */
+position: relative; 
+
+
+&amp;:after {
+  content: '';
+  display: block;
+}
+&amp;:content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+`;
+
+
+const CuadradoHancho = styled.div`
+width: 80%;
+max-width: 140px;
+min-height: 120px;
+border-radius: 16px;
+margin: auto;
+display: flex;
+justify-content: center; /* Centra horizontalmente */
+align-items: center; /* Centra verticalmente */
+position: relative; 
+
+
+&amp;:after {
+  content: '';
+  display: block;
+}
+&amp;:content {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+}
+`;
+
+
+
+const ContainerButton = styled.div`
+  height: auto;
+  width: 95%;
+
+  margin: 0px auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2%;
+`
+
+
+const ImageContainer = styled.div`
+  height: 100%;
+  width: 94%;
+
+  margin: 10px auto;
+
+  overflow: hidden;
+  position: relative;
+
+  
+  background-color: white;
+  border-radius: 16px;
+
+  border: 4px solid teal;
+
+`
+
+const MarkersContainer = styled.div`
+  aspect-ratio: 600 / 1332;
+  height: 97%; 
+  max-width: 340px;
+
+  margin: 10px auto;
+  border-radius: 25px;
+
+  align-items: center;
+  position: relative;
+`
+
+
+const Imagen = styled.img`
+  height: 100%;
+  max-width: 340px;
+  borderRadius: 25px;
+`
+
+const Marker = styled(Link)`
+  position: absolute;
+  top: ${({ marker }) => `${marker.y}%`};   
+  left: ${({ marker }) => `${marker.x}%`};
+
+  width: 7%;
+
+  /* Filtrar el marcador según la imagen */
+  ${({ marker, currentimage }) =>
+    marker.body !== currentimage &amp;&amp;
+    `
+    display: none;
+  `}
+
+`
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-HomePage.html">HomePage</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.3</a> on Sun Jun 23 2024 19:08:42 GMT+0200 (hora de verano de Europa central)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

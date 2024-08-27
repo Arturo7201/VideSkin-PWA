@@ -1,0 +1,8 @@
+#custom-styles.scss
+
+.navbar.navbar {
+  background-color: #204285; /* Color de fondo azul oscuro */
+  color: #ffffff; /* Color del texto blanco */
+}
+
+
